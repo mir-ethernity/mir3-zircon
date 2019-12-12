@@ -358,17 +358,21 @@ namespace LibraryEditor
             int e = w * h / 2;
 
             SquishFlags type;
+            PixelFormat pixelFormat;
             switch (textureType)
             {
                 case 0:
                 case 1:
                     type = SquishFlags.Dxt1;
+                    pixelFormat = PixelFormat.Format32bppArgb;
                     break;
                 case 3:
                     type = SquishFlags.Dxt3;
+                    pixelFormat = PixelFormat.Format32bppArgb;
                     break;
                 case 5:
                     type = SquishFlags.Dxt5;
+                    pixelFormat = PixelFormat.Format32bppArgb;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -382,7 +386,7 @@ namespace LibraryEditor
             BitmapData data = bitmap.LockBits(
                 new Rectangle(0, 0, w, h),
                 ImageLockMode.WriteOnly,
-                PixelFormat.Format32bppRgb
+                pixelFormat
             );
 
             fixed (byte* source = decompressedBuffer)
