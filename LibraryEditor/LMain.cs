@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Mir.ImageLibrary;
+using Mir.ImageLibrary.BitmapConverter;
+using Mir.ImageLibrary.Zircon;
+using Mir.ImageLibrary.Zircon.Editor;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -13,8 +17,9 @@ namespace LibraryEditor
     public partial class LMain : Form
     {
         private readonly Dictionary<int, int> _indexList = new Dictionary<int, int>();
-        private Mir3Library _library;
-        private Mir3Library.Mir3Image _selectedImage, _exportImage;
+        private IImageLibraryEditor _library;
+        private string _libraryPath;
+        private IImageSelectorType _selectedImage, _exportImage;
         private Image _originalImage;
 
         [DllImport("user32.dll")]
@@ -29,12 +34,14 @@ namespace LibraryEditor
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
             this.DragDrop += new DragEventHandler(Form1_DragDrop);
+
             if (Program.openFileWith.Length > 0 &&
                 File.Exists(Program.openFileWith))
             {
                 OpenLibraryDialog.FileName = Program.openFileWith;
-                _library = new Mir3Library(OpenLibraryDialog.FileName);
-                PreviewListView.VirtualListSize = _library.Images.Count;
+                _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
+                _libraryPath = OpenLibraryDialog.FileName;
+                PreviewListView.VirtualListSize = _library.Length;
 
                 // Show .Lib path in application title.
                 this.Text = OpenLibraryDialog.FileName.ToString();
@@ -97,7 +104,6 @@ namespace LibraryEditor
                 PreviewListView.Items.Clear();
                 _indexList.Clear();
 
-                if (_library != null) _library.Close();
                 //_library = new MLibraryV2(files[0]);
                 //PreviewListView.VirtualListSize = _library.Images.Count;
                 PreviewListView.RedrawItems(0, PreviewListView.Items.Count - 1, true);
@@ -130,6 +136,56 @@ namespace LibraryEditor
             OffSetYTextBox.BackColor = SystemColors.Window;
         }
 
+        private Bitmap ConvertImageToBitmap(IImage image)
+        {
+            var data = image.GetData();
+            var buffer = BitmapConverter.ConvertTextureToBitmap(data.Type, image.Width, image.Height, data.Buffer);
+            var bitmap = new Bitmap(image.Width, image.Height);
+            var bitmapData = bitmap.LockBits(new Rectangle { X = 0, Y = 0, Width = image.Width, Height = image.Height }, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            Marshal.Copy(buffer, 0, bitmapData.Scan0, buffer.Length);
+            bitmap.UnlockBits(bitmapData);
+            return bitmap;
+        }
+
+        private ZirconImage ConvertBitmapToImage(Bitmap bitmap, short offsetX, short offsetY)
+        {
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
+                                              PixelFormat.Format32bppArgb);
+
+            byte[] pixels = new byte[bitmap.Width * bitmap.Height * 4];
+
+            Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
+            bitmap.UnlockBits(data);
+
+            byte[] texture = BitmapConverter.ConvertBitmapToTexture(ImageDataType.Dxt1, bitmap.Width, bitmap.Height, pixels);
+
+            return new ZirconImage((ushort)bitmap.Width, (ushort)bitmap.Height, offsetX, offsetY, ModificatorType.None, ImageDataType.Dxt1, texture);
+        }
+
+        private Bitmap CreatePreview(IImage image)
+        {
+            if (image == null)
+            {
+                return new Bitmap(1, 1);
+            }
+
+            var bitmap = ConvertImageToBitmap(image);
+            var preview = new Bitmap(64, 64);
+
+            using (Graphics g = Graphics.FromImage(preview))
+            {
+                g.InterpolationMode = InterpolationMode.Low;//HighQualityBicubic
+                g.Clear(Color.Transparent);
+                int w = Math.Min((int)Width, 64);
+                int h = Math.Min((int)Height, 64);
+                g.DrawImage(bitmap, new Rectangle((64 - w) / 2, (64 - h) / 2, w, h), new Rectangle(0, 0, Width, Height), GraphicsUnit.Pixel);
+
+                g.Save();
+            }
+
+            return preview;
+        }
+
         private void PreviewListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (PreviewListView.SelectedIndices.Count == 0)
@@ -138,7 +194,7 @@ namespace LibraryEditor
                 return;
             }
 
-            _selectedImage = _library.GetImage(PreviewListView.SelectedIndices[0]);
+            _selectedImage = _library[PreviewListView.SelectedIndices[0]];
 
             if (_selectedImage == null)
             {
@@ -148,33 +204,39 @@ namespace LibraryEditor
 
             if (radioButtonImage.Checked)
             {
-                WidthLabel.Text = _selectedImage.Width.ToString();
-                HeightLabel.Text = _selectedImage.Height.ToString();
+                WidthLabel.Text = _selectedImage[ImageType.Image].Width.ToString();
+                HeightLabel.Text = _selectedImage[ImageType.Image].Height.ToString();
 
-                OffSetXTextBox.Text = _selectedImage.OffSetX.ToString();
-                OffSetYTextBox.Text = _selectedImage.OffSetY.ToString();
+                OffSetXTextBox.Text = _selectedImage[ImageType.Image].OffsetX.ToString();
+                OffSetYTextBox.Text = _selectedImage[ImageType.Image].OffsetY.ToString();
 
-                ImageBox.Image = _selectedImage.Image;
+                ImageBox.Image = ConvertImageToBitmap(_selectedImage[ImageType.Image]);
             }
             else if (radioButtonShadow.Checked)
             {
-                WidthLabel.Text = _selectedImage.ShadowWidth.ToString();
-                HeightLabel.Text = _selectedImage.ShadowHeight.ToString();
+                if (_selectedImage[ImageType.Shadow] != null)
+                {
+                    WidthLabel.Text = _selectedImage[ImageType.Shadow].Width.ToString();
+                    HeightLabel.Text = _selectedImage[ImageType.Shadow].Height.ToString();
 
-                OffSetXTextBox.Text = _selectedImage.ShadowOffSetX.ToString();
-                OffSetYTextBox.Text = _selectedImage.ShadowOffSetY.ToString();
+                    OffSetXTextBox.Text = _selectedImage[ImageType.Shadow].OffsetX.ToString();
+                    OffSetYTextBox.Text = _selectedImage[ImageType.Shadow].OffsetY.ToString();
 
-                ImageBox.Image = _selectedImage.ShadowImage;
+                    ImageBox.Image = ConvertImageToBitmap(_selectedImage[ImageType.Shadow]);
+                }
             }
             if (radioButtonOverlay.Checked)
             {
-                WidthLabel.Text = _selectedImage.OverlayWidth.ToString();
-                HeightLabel.Text = _selectedImage.OverlayHeight.ToString();
+                if (_selectedImage[ImageType.Overlay] != null)
+                {
+                    WidthLabel.Text = _selectedImage[ImageType.Overlay].Width.ToString();
+                    HeightLabel.Text = _selectedImage[ImageType.Overlay].Height.ToString();
 
-                OffSetXTextBox.Text = _selectedImage.OffSetX.ToString();
-                OffSetYTextBox.Text = _selectedImage.OffSetY.ToString();
+                    OffSetXTextBox.Text = _selectedImage[ImageType.Overlay].OffsetX.ToString();
+                    OffSetYTextBox.Text = _selectedImage[ImageType.Overlay].OffsetY.ToString();
 
-                ImageBox.Image = _selectedImage.OverlayImage;
+                    ImageBox.Image = ConvertImageToBitmap(_selectedImage[ImageType.Overlay]);
+                }
             }
 
             // Keep track of what image/s are selected.
@@ -206,18 +268,18 @@ namespace LibraryEditor
 
             _indexList.Add(e.ItemIndex, ImageList.Images.Count);
             if (radioButtonImage.Checked)
-                ImageList.Images.Add(_library.GetPreview(e.ItemIndex, ImageType.Image));
+                ImageList.Images.Add(CreatePreview(_library[e.ItemIndex]?[ImageType.Image]));
             else if (radioButtonShadow.Checked)
-                ImageList.Images.Add(_library.GetPreview(e.ItemIndex, ImageType.Shadow));
+                ImageList.Images.Add(CreatePreview(_library[e.ItemIndex]?[ImageType.Shadow]));
             else if (radioButtonOverlay.Checked)
-                ImageList.Images.Add(_library.GetPreview(e.ItemIndex, ImageType.Overlay));
+                ImageList.Images.Add(CreatePreview(_library[e.ItemIndex]?[ImageType.Overlay]));
             e.Item = new ListViewItem { ImageIndex = index, Text = e.ItemIndex.ToString() };
         }
 
         private void AddButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            if (_library._fileName == null) return;
+            if (_library.Name == null) return;
 
             if (ImportImageDialog.ShowDialog() != DialogResult.OK) return;
 
@@ -257,12 +319,12 @@ namespace LibraryEditor
                         short.TryParse(placements[1], out y);
                 }
 
-                _library.AddImage(image, x, y);
+                _library.AddImage(ImageType.Image, ConvertBitmapToImage(image, x, y));
                 toolStripProgressBar.Value++;
                 //image.Dispose();
             }
 
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
             toolStripProgressBar.Value = 0;
         }
 
@@ -270,10 +332,13 @@ namespace LibraryEditor
         {
             if (SaveLibraryDialog.ShowDialog() != DialogResult.OK) return;
 
-            if (_library != null) _library.Close();
-            _library = new Mir3Library(SaveLibraryDialog.FileName);
+            if (_library != null) _library.Dispose();
+            _library = new ZirconImageLibraryEditor(SaveLibraryDialog.FileName);
+            _libraryPath = SaveLibraryDialog.FileName;
+
             PreviewListView.VirtualListSize = 0;
-            _library.Save(SaveLibraryDialog.FileName);
+            using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
+                _library.Save(fs);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -285,9 +350,10 @@ namespace LibraryEditor
             PreviewListView.Items.Clear();
             _indexList.Clear();
 
-            if (_library != null) _library.Close();
-            _library = new Mir3Library(OpenLibraryDialog.FileName);
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            if (_library != null) _library.Dispose();
+            _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
+            _libraryPath = OpenLibraryDialog.FileName;
+            PreviewListView.VirtualListSize = _library.Length;
 
             // Show .Lib path in application title.
             this.Text = OpenLibraryDialog.FileName.ToString();
@@ -305,16 +371,17 @@ namespace LibraryEditor
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            _library.Save(_library.FileName);
+            using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
+                _library.Save(fs);
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
             if (SaveLibraryDialog.ShowDialog() != DialogResult.OK) return;
-
-            _library._fileName = SaveLibraryDialog.FileName;
-            _library.Save(_library._fileName);
+            _libraryPath = SaveLibraryDialog.FileName;
+            using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
+                _library.Save(fs);
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -325,7 +392,7 @@ namespace LibraryEditor
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            if (_library.FileName == null) return;
+            if (_libraryPath == null) return;
             if (PreviewListView.SelectedIndices.Count == 0) return;
 
             if (MessageBox.Show("Are you sure you want to delete the selected Image?",
@@ -407,8 +474,9 @@ namespace LibraryEditor
         {
             if (PreviewListView.SelectedIndices.Count == 0) return;
             if (SaveLibraryDialog.ShowDialog() != DialogResult.OK) return;
+            _libraryPath = SaveLibraryDialog.FileName;
 
-            Mir3Library tempLibrary = new Mir3Library(SaveLibraryDialog.FileName);
+            var tempLibrary = new ZirconImageLibraryEditor();
 
             List<int> copyList = new List<int>();
 
@@ -419,11 +487,14 @@ namespace LibraryEditor
 
             for (int i = 0; i < copyList.Count; i++)
             {
-                Mir3Library.Mir3Image image = _library.GetImage(copyList[i]);
-                tempLibrary.AddImage(image.Image, image.OffSetX, image.OffSetY);
+                IImageSelectorType image = _library[copyList[i]];
+                tempLibrary.AddImage(ImageType.Image, image[ImageType.Image]);
+                tempLibrary.AddImage(ImageType.Shadow, image[ImageType.Shadow]);
+                tempLibrary.AddImage(ImageType.Overlay, image[ImageType.Overlay]);
             }
 
-            tempLibrary.Save(SaveLibraryDialog.FileName);
+            using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
+                tempLibrary.Save(fs);
         }
 
         private void removeBlanksToolStripMenuItem_Click(object sender, EventArgs e)
@@ -435,7 +506,8 @@ namespace LibraryEditor
             _library.RemoveBlanks();
             ImageList.Images.Clear();
             _indexList.Clear();
-            PreviewListView.VirtualListSize = _library.Images.Count;
+
+            PreviewListView.VirtualListSize = _library.Length;
         }
 
         private void countBlanksToolStripMenuItem_Click(object sender, EventArgs e)
@@ -489,8 +561,7 @@ namespace LibraryEditor
 
             for (int i = 0; i < PreviewListView.SelectedIndices.Count; i++)
             {
-                Mir3Library.Mir3Image image = _library.GetImage(PreviewListView.SelectedIndices[i]);
-                image.OffSetX = temp;
+                _library.SetOffsetX(PreviewListView.SelectedIndices[i], ImageType.Image, temp);
             }
         }
 
@@ -512,15 +583,14 @@ namespace LibraryEditor
 
             for (int i = 0; i < PreviewListView.SelectedIndices.Count; i++)
             {
-                Mir3Library.Mir3Image image = _library.GetImage(PreviewListView.SelectedIndices[i]);
-                image.OffSetY = temp;
+                _library.SetOffsetY(PreviewListView.SelectedIndices[i], ImageType.Image, temp);
             }
         }
 
         private void InsertImageButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            if (_library.FileName == null) return;
+            if (_libraryPath == null) return;
             if (PreviewListView.SelectedIndices.Count == 0) return;
             if (ImportImageDialog.ShowDialog() != DialogResult.OK) return;
 
@@ -564,16 +634,18 @@ namespace LibraryEditor
                         short.TryParse(placements[1], out y);
                 }
 
-                _library.InsertImage(index, image, x, y);
+                _library.InsertImage(index, ImageType.Image, ConvertBitmapToImage(image, x, y));
 
                 toolStripProgressBar.Value++;
             }
 
             ImageList.Images.Clear();
             _indexList.Clear();
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
             toolStripProgressBar.Value = 0;
-            _library.Save(_library._fileName);
+
+            using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
+                _library.Save(fs);
         }
 
         private void safeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -584,7 +656,7 @@ namespace LibraryEditor
             _library.RemoveBlanks(true);
             ImageList.Images.Clear();
             _indexList.Clear();
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
         }
 
         private const int HowDeepToScan = 6;
@@ -652,7 +724,7 @@ namespace LibraryEditor
         private void ExportButton_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            if (_library.FileName == null) return;
+            if (_libraryPath == null) return;
             if (PreviewListView.SelectedIndices.Count == 0) return;
 
             string _fileName = Path.GetFileName(OpenLibraryDialog.FileName);
@@ -671,14 +743,16 @@ namespace LibraryEditor
 
             for (int i = _col[0]; i < (_col[0] + _col.Count); i++)
             {
-                _exportImage = _library.GetImage(i);
-                if (_exportImage?.Image == null)
+                _exportImage = _library[i];
+                var image = _exportImage?[ImageType.Image];
+                if (image == null)
                 {
                     blank.Save(_folder + i.ToString() + ".bmp", ImageFormat.Bmp);
                 }
                 else
                 {
-                    _exportImage.Image.Save(_folder + i.ToString() + ".bmp", ImageFormat.Bmp);
+                    var bitmap = ConvertImageToBitmap(image);
+                    bitmap.Save(_folder + i.ToString() + ".bmp", ImageFormat.Bmp);
                 }
 
                 toolStripProgressBar.Value++;
@@ -686,8 +760,8 @@ namespace LibraryEditor
                 if (!Directory.Exists(_folder + "/Placements/"))
                     Directory.CreateDirectory(_folder + "/Placements/");
 
-                int offSetX = _exportImage?.OffSetX ?? 0;
-                int offSetY = _exportImage?.OffSetY ?? 0;
+                int offSetX = image?.OffsetX ?? 0;
+                int offSetY = image?.OffsetY ?? 0;
 
                 File.WriteAllLines(_folder + "/Placements/" + i.ToString() + ".txt", new string[] { offSetX.ToString(), offSetY.ToString() });
             }
@@ -709,7 +783,7 @@ namespace LibraryEditor
         // Resize the image(Zoom).
         private Image ImageBoxZoom(Image image, Size size)
         {
-            _originalImage = _selectedImage.Image;
+            _originalImage = ConvertImageToBitmap(_selectedImage[ImageType.Image]);
             Bitmap _bmp = new Bitmap(_originalImage, Convert.ToInt32(_originalImage.Width * size.Width), Convert.ToInt32(_originalImage.Height * size.Height));
             Graphics _gfx = Graphics.FromImage(_bmp);
             return _bmp;
@@ -728,7 +802,7 @@ namespace LibraryEditor
                 {
                     PreviewListView.Items[(int)nudJump.Value].EnsureVisible();
 
-                    Bitmap _newBMP = new Bitmap(_selectedImage.Width * ZoomTrackBar.Value, _selectedImage.Height * ZoomTrackBar.Value);
+                    Bitmap _newBMP = new Bitmap(_selectedImage[ImageType.Image].Width * ZoomTrackBar.Value, _selectedImage[ImageType.Image].Height * ZoomTrackBar.Value);
                     using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_newBMP))
                     {
                         if (checkBoxPreventAntiAliasing.Checked == true)
@@ -742,7 +816,7 @@ namespace LibraryEditor
                             g.InterpolationMode = InterpolationMode.NearestNeighbor;
                         }
 
-                        g.DrawImage(_selectedImage.Image, new Rectangle(0, 0, _newBMP.Width, _newBMP.Height));
+                        g.DrawImage(ConvertImageToBitmap(_selectedImage[ImageType.Image]), new Rectangle(0, 0, _newBMP.Width, _newBMP.Height));
                     }
                     ImageBox.Image = _newBMP;
 
@@ -786,7 +860,7 @@ namespace LibraryEditor
         private void buttonReplace_Click(object sender, EventArgs e)
         {
             if (_library == null) return;
-            if (_library.FileName == null) return;
+            if (_libraryPath == null) return;
             if (PreviewListView.SelectedIndices.Count == 0) return;
 
             OpenFileDialog ofd = new OpenFileDialog();
@@ -798,13 +872,13 @@ namespace LibraryEditor
 
             ImageList.Images.Clear();
             _indexList.Clear();
-            _library.ReplaceImage(PreviewListView.SelectedIndices[0], newBmp, 0, 0);
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            _library.InsertImage(PreviewListView.SelectedIndices[0], ImageType.Image, ConvertBitmapToImage(newBmp, 0, 0));
+            PreviewListView.VirtualListSize = _library.Length;
 
             try
             {
                 PreviewListView.RedrawItems(0, PreviewListView.Items.Count - 1, true);
-                ImageBox.Image = _library.Images[PreviewListView.SelectedIndices[0]].Image;
+                ImageBox.Image = ConvertImageToBitmap(_library[PreviewListView.SelectedIndices[0]][ImageType.Image]);
             }
             catch (Exception)
             {
@@ -824,7 +898,7 @@ namespace LibraryEditor
                     this.PreviewListView.Items[index].Selected = true;
                     PreviewListView.Items[index].EnsureVisible();
 
-                    if (_selectedImage == null || _selectedImage.Height == 1 && _selectedImage.Width == 1 && PreviewListView.SelectedIndices[0] != 0)
+                    if (_selectedImage == null || _selectedImage[ImageType.Image].Height == 1 && _selectedImage[ImageType.Image].Width == 1 && PreviewListView.SelectedIndices[0] != 0)
                     {
                         previousImageToolStripMenuItem_Click(null, null);
                     }
@@ -849,7 +923,7 @@ namespace LibraryEditor
                     this.PreviewListView.Items[index].Selected = true;
                     PreviewListView.Items[index].EnsureVisible();
 
-                    if (_selectedImage == null || _selectedImage.Height == 1 && _selectedImage.Width == 1 && PreviewListView.SelectedIndices[0] != 0)
+                    if (_selectedImage == null || _selectedImage[ImageType.Image].Height == 1 && _selectedImage[ImageType.Image].Width == 1 && PreviewListView.SelectedIndices[0] != 0)
                     {
                         nextImageToolStripMenuItem_Click(null, null);
                     }
@@ -945,13 +1019,13 @@ namespace LibraryEditor
 
         private void radioButtonImage_CheckedChanged(object sender, EventArgs e)
         {
-            int index = PreviewListView.SelectedIndices[0];            
+            int index = PreviewListView.SelectedIndices[0];
             ImageList.Images.Clear();
             PreviewListView.Items.Clear();
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
 
             OffSetXTextBox.Enabled = true;
             OffSetYTextBox.Enabled = true;
@@ -972,7 +1046,7 @@ namespace LibraryEditor
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
 
             OffSetXTextBox.Enabled = false;
             OffSetYTextBox.Enabled = false;
@@ -993,7 +1067,7 @@ namespace LibraryEditor
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Images.Count;
+            PreviewListView.VirtualListSize = _library.Length;
 
             OffSetXTextBox.Enabled = false;
             OffSetYTextBox.Enabled = false;

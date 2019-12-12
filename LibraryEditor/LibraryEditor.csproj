@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -7,7 +7,7 @@
     <OutputType>WinExe</OutputType>
     <NoStandardLibraries>false</NoStandardLibraries>
     <AssemblyName>Mir3LibraryEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -133,6 +133,24 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mir.ImageLibrary.BitmapConverter\Mir.ImageLibrary.BitmapConverter.csproj">
+      <Project>{32e368c2-bf35-4c46-bf89-549a0c46664c}</Project>
+      <Name>Mir.ImageLibrary.BitmapConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mir.ImageLibrary.Zircon.Editor\Mir.ImageLibrary.Zircon.Editor.csproj">
+      <Project>{8198c0cb-9340-44a7-8364-5262bd2d4571}</Project>
+      <Name>Mir.ImageLibrary.Zircon.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mir.ImageLibrary.Zircon\Mir.ImageLibrary.Zircon.csproj">
+      <Project>{2be57db9-e2a2-4d1b-a0be-ef846999d8c2}</Project>
+      <Name>Mir.ImageLibrary.Zircon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mir.ImageLibrary\Mir.ImageLibrary.csproj">
+      <Project>{4b5bf063-9cb1-4eda-b66e-ff95aee5fa20}</Project>
+      <Name>Mir.ImageLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

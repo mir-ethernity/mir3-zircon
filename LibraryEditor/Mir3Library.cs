@@ -6,16 +6,10 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
+using Mir.ImageLibrary;
 
 namespace LibraryEditor
 {
-    public enum ImageType
-    {
-        Image,
-        Shadow,
-        Overlay,
-    }
-
     public sealed class Mir3Library
     {
         public string FileName;
