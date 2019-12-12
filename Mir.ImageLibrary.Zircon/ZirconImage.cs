@@ -10,6 +10,7 @@ namespace Mir.ImageLibrary.Zircon
         private readonly BinaryReader _fileReader;
         private byte[] _buffer;
 
+        public bool HasData { get; }
         public ModificatorType Modificator { get; }
 
         public int Position { get; internal set; }
@@ -25,10 +26,18 @@ namespace Mir.ImageLibrary.Zircon
         public ImageDataType DataType { get; }
         public static int HeaderSize { get; internal set; }
 
+        public ZirconImage(short offsetX, short offsetY, ModificatorType modificator)
+        {
+            HasData = false;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
+            Modificator = modificator;
+        }
+
         public ZirconImage(int position, ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, ImageDataType dataType, BinaryReader fileReader)
         {
             _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
-
+            HasData = true;
             Position = position;
             Width = width;
             Height = height;
@@ -42,6 +51,7 @@ namespace Mir.ImageLibrary.Zircon
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
             Position = 0;
+            HasData = true;
             Width = width;
             Height = height;
             OffsetX = offsetX;

@@ -6,6 +6,7 @@ namespace Mir.ImageLibrary
 {
     public interface IImage
     {
+        bool HasData { get; }
         ImageDataType DataType { get; }
         ModificatorType Modificator { get; }
 

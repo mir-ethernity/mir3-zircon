@@ -95,10 +95,14 @@ namespace Mir.ImageLibrary.Zircon
 
                     offset += ZirconImage.CalculateImageDataSize(width, height);
 
-                    if (shadowWidth > 0 && shadowHeight > 0)
+                    if ((shadowWidth > 0 && shadowHeight > 0) || shadowOffsetX != 0 && shadowOffsetY != 0)
                     {
-                        shadow = new ZirconImage(offset, shadowWidth, shadowHeight, shadowOffsetX, shadowOffsetY, shadowModificatorType, dataType, _reader);
-                        offset += ZirconImage.CalculateImageDataSize(shadowWidth, shadowHeight);
+                        shadow = shadowWidth == 0 || shadowHeight == 0
+                            ? new ZirconImage(offsetX, offsetY, shadowModificatorType)
+                            : new ZirconImage(offset, shadowWidth, shadowHeight, shadowOffsetX, shadowOffsetY, shadowModificatorType, dataType, _reader);
+
+                        if (shadowWidth > 0 && shadowHeight > 0)
+                            offset += ZirconImage.CalculateImageDataSize(shadowWidth, shadowHeight);
                     }
 
                     if (overlayWidth > 0 && overlayHeight > 0)

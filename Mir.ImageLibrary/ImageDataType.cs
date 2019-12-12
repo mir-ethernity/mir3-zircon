@@ -7,6 +7,7 @@ namespace Mir.ImageLibrary
     public enum ImageDataType : byte
     {
         Dxt1,
-        Dxt5
+        Dxt5,
+        RGBA,
     }
 }
