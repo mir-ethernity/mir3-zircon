@@ -1,4 +1,5 @@
-﻿namespace Mir.ImageLibrary.BitmapConverter.Converters
+﻿
+namespace Mir.ImageLibrary.Converter.BitmapConverters
 {
     [BitmapConverter(ImageDataType.Dxt5)]
     internal class Dxt5Converter : IBitmapConverter

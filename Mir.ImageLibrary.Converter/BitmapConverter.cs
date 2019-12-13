@@ -1,11 +1,11 @@
-﻿using Mir.ImageLibrary.BitmapConverter.Converters;
+﻿using Mir.ImageLibrary.Converter.BitmapConverters;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 
-namespace Mir.ImageLibrary.BitmapConverter
+namespace Mir.ImageLibrary.Converter
 {
     public static class BitmapConverter
     {
@@ -21,11 +21,15 @@ namespace Mir.ImageLibrary.BitmapConverter
 
         public static byte[] ConvertTextureToBitmap(ImageDataType bufferType, int width, int height, byte[] buffer)
         {
+            if (!_converters.ContainsKey(bufferType))
+                throw new NotImplementedException($"Data type {bufferType.ToString()} is not implemented");
             return _converters[bufferType].ConvertTextureToBitmap(width, height, buffer);
         }
 
         public static byte[] ConvertBitmapToTexture(ImageDataType bufferType, int width, int height, byte[] rgba)
         {
+            if (!_converters.ContainsKey(bufferType))
+                throw new NotImplementedException($"Data type {bufferType.ToString()} is not implemented");
             return _converters[bufferType].ConvertBitmapToTexture(width, height, rgba);
         }
     }

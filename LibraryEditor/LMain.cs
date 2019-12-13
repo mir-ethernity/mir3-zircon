@@ -1,5 +1,6 @@
 ﻿using Mir.ImageLibrary;
-using Mir.ImageLibrary.BitmapConverter;
+using Mir.ImageLibrary.Converter;
+using Mir.ImageLibrary.Wemade;
 using Mir.ImageLibrary.Zircon;
 using Mir.ImageLibrary.Zircon.Editor;
 using System;
@@ -19,7 +20,7 @@ namespace LibraryEditor
         private readonly Dictionary<int, int> _indexList = new Dictionary<int, int>();
         private IImageLibraryEditor _library;
         private string _libraryPath;
-        private IImageSelectorType _selectedImage, _exportImage;
+        private IDictionary<ImageType, IImage> _selectedImage, _exportImage;
         private Image _originalImage;
 
         [DllImport("user32.dll")]
@@ -33,7 +34,6 @@ namespace LibraryEditor
 
             this.AllowDrop = true;
             this.DragEnter += new DragEventHandler(Form1_DragEnter);
-            this.DragDrop += new DragEventHandler(Form1_DragDrop);
 
             if (Program.openFileWith.Length > 0 &&
                 File.Exists(Program.openFileWith))
@@ -41,7 +41,7 @@ namespace LibraryEditor
                 OpenLibraryDialog.FileName = Program.openFileWith;
                 _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
                 _libraryPath = OpenLibraryDialog.FileName;
-                PreviewListView.VirtualListSize = _library.Length;
+                PreviewListView.VirtualListSize = _library.Count;
 
                 // Show .Lib path in application title.
                 this.Text = OpenLibraryDialog.FileName.ToString();
@@ -54,66 +54,6 @@ namespace LibraryEditor
                 radioButtonImage.Enabled = true;
                 radioButtonShadow.Enabled = true;
                 radioButtonOverlay.Enabled = true;
-            }
-        }
-
-        private void Form1_DragDrop(object sender, DragEventArgs e)
-        {
-            return; //Not added yet
-
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            if (Path.GetExtension(files[0]).ToUpper() == ".WIL" ||
-                Path.GetExtension(files[0]).ToUpper() == ".WZL" ||
-                Path.GetExtension(files[0]).ToUpper() == ".MIZ")
-            {
-                try
-                {
-                    ParallelOptions options = new ParallelOptions { MaxDegreeOfParallelism = 8 };
-                    Parallel.For(0, files.Length, options, i =>
-                    {
-                        if (Path.GetExtension(files[i]) == ".wtl")
-                        {
-                            WTLLibrary WTLlib = new WTLLibrary(files[i]);
-                            WTLlib.ToMLibrary();
-                        }
-                        else
-                        {
-                            WeMadeLibrary WILlib = new WeMadeLibrary(files[i]);
-                            WILlib.ToMLibrary();
-                        }
-                        toolStripProgressBar.Value++;
-                    });
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-
-                toolStripProgressBar.Value = 0;
-
-                MessageBox.Show(
-                    string.Format("Successfully converted {0} {1}",
-                    (OpenWeMadeDialog.FileNames.Length).ToString(),
-                    (OpenWeMadeDialog.FileNames.Length > 1) ? "libraries" : "library"));
-            }
-            else if (Path.GetExtension(files[0]).ToUpper() == ".LIB")
-            {
-                ClearInterface();
-                ImageList.Images.Clear();
-                PreviewListView.Items.Clear();
-                _indexList.Clear();
-
-                //_library = new MLibraryV2(files[0]);
-                //PreviewListView.VirtualListSize = _library.Images.Count;
-                PreviewListView.RedrawItems(0, PreviewListView.Items.Count - 1, true);
-
-                // Show .Lib path in application title.
-                this.Text = files[0].ToString();
-            }
-            else
-            {
-                return;
             }
         }
 
@@ -138,8 +78,8 @@ namespace LibraryEditor
 
         private Bitmap ConvertImageToBitmap(IImage image)
         {
-            var data = image.GetData();
-            var buffer = BitmapConverter.ConvertTextureToBitmap(data.Type, image.Width, image.Height, data.Buffer);
+            var data = image.GetBuffer();
+            var buffer = BitmapConverter.ConvertTextureToBitmap(image.DataType, image.Width, image.Height, data);
             var bitmap = new Bitmap(image.Width, image.Height);
             var bitmapData = bitmap.LockBits(new Rectangle { X = 0, Y = 0, Width = image.Width, Height = image.Height }, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             Marshal.Copy(buffer, 0, bitmapData.Scan0, buffer.Length);
@@ -147,7 +87,7 @@ namespace LibraryEditor
             return bitmap;
         }
 
-        private ZirconImage ConvertBitmapToImage(Bitmap bitmap, short offsetX, short offsetY)
+        private IImage GenerateImage(Bitmap bitmap, ModificatorType modificator, short offsetX, short offsetY)
         {
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
                                               PixelFormat.Format32bppArgb);
@@ -157,9 +97,8 @@ namespace LibraryEditor
             Marshal.Copy(data.Scan0, pixels, 0, pixels.Length);
             bitmap.UnlockBits(data);
 
-            byte[] texture = BitmapConverter.ConvertBitmapToTexture(ImageDataType.Dxt1, bitmap.Width, bitmap.Height, pixels);
 
-            return new ZirconImage((ushort)bitmap.Width, (ushort)bitmap.Height, offsetX, offsetY, ModificatorType.None, ImageDataType.Dxt1, texture);
+            return _library.CreateImageFromRGBA((ushort)bitmap.Width, (ushort)bitmap.Height, offsetX, offsetY, modificator, pixels);
         }
 
         private Bitmap CreatePreview(IImage image)
@@ -319,12 +258,12 @@ namespace LibraryEditor
                         short.TryParse(placements[1], out y);
                 }
 
-                _library.AddImage(ImageType.Image, ConvertBitmapToImage(image, x, y));
+                _library.AddImage(ImageType.Image, GenerateImage(image, ModificatorType.None, x, y));
                 toolStripProgressBar.Value++;
                 //image.Dispose();
             }
 
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
             toolStripProgressBar.Value = 0;
         }
 
@@ -353,7 +292,7 @@ namespace LibraryEditor
             if (_library != null) _library.Dispose();
             _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
             _libraryPath = OpenLibraryDialog.FileName;
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
 
             // Show .Lib path in application title.
             this.Text = OpenLibraryDialog.FileName.ToString();
@@ -414,6 +353,17 @@ namespace LibraryEditor
             PreviewListView.VirtualListSize -= removeList.Count;
         }
 
+        private void ConvertLibrary(string path, IImageLibrary source)
+        {
+            var newPath = Path.ChangeExtension(path, ".Zl");
+            using (source)
+            using (var library = ImageLibraryConverter.Convert<ZirconImageLibraryEditor>(source))
+            using (var fs = new FileStream(newPath, FileMode.Create, FileAccess.Write))
+            {
+                library.Save(fs);
+            }
+        }
+
         private void convertToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (OpenWeMadeDialog.ShowDialog() != DialogResult.OK) return;
@@ -428,32 +378,33 @@ namespace LibraryEditor
                             {
                                 if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".wtl")
                                 {
-                                    WTLLibrary WTLlib = new WTLLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    WTLlib.ToMLibrary();
+                                    WTLImageLibrary wtlLibrary = new WTLImageLibrary(OpenWeMadeDialog.FileNames[i]);
+                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], wtlLibrary);
                                 }
                                 else if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".Lib")
                                 {
-                                    FileStream stream = new FileStream(OpenWeMadeDialog.FileNames[i], FileMode.Open, FileAccess.ReadWrite);
-                                    BinaryReader reader = new BinaryReader(stream);
-                                    int CurrentVersion = reader.ReadInt32();
-                                    stream.Close();
-                                    stream.Dispose();
-                                    reader.Dispose();
-                                    if (CurrentVersion == 1)
-                                    {
-                                        MLibrary v1Lib = new MLibrary(OpenWeMadeDialog.FileNames[i]);
-                                        v1Lib.ToMLibrary();
-                                    }
-                                    else
-                                    {
-                                        MLibraryV2 v2Lib = new MLibraryV2(OpenWeMadeDialog.FileNames[i]);
-                                        v2Lib.ToMLibrary();
-                                    }
+                                    //FileStream stream = new FileStream(OpenWeMadeDialog.FileNames[i], FileMode.Open, FileAccess.ReadWrite);
+                                    //BinaryReader reader = new BinaryReader(stream);
+                                    //int CurrentVersion = reader.ReadInt32();
+                                    //stream.Close();
+                                    //stream.Dispose();
+                                    //reader.Dispose();
+                                    //if (CurrentVersion == 1)
+                                    //{
+                                    //    MLibrary v1Lib = new MLibrary(OpenWeMadeDialog.FileNames[i]);
+                                    //    v1Lib.ToMLibrary();
+                                    //}
+                                    //else
+                                    //{
+                                    //    MLibraryV2 v2Lib = new MLibraryV2(OpenWeMadeDialog.FileNames[i]);
+                                    //    v2Lib.ToMLibrary();
+                                    //}
+                                    throw new NotImplementedException();
                                 }
                                 else
                                 {
-                                    WeMadeLibrary WILlib = new WeMadeLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    WILlib.ToMLibrary();
+                                    WemadeImageLibrary WILlib = new WemadeImageLibrary(OpenWeMadeDialog.FileNames[i]);
+                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], WILlib);
                                 }
                                 toolStripProgressBar.Value++;
                             });
@@ -487,7 +438,7 @@ namespace LibraryEditor
 
             for (int i = 0; i < copyList.Count; i++)
             {
-                IImageSelectorType image = _library[copyList[i]];
+                IDictionary<ImageType, IImage> image = _library[copyList[i]];
                 tempLibrary.AddImage(ImageType.Image, image[ImageType.Image]);
                 tempLibrary.AddImage(ImageType.Shadow, image[ImageType.Shadow]);
                 tempLibrary.AddImage(ImageType.Overlay, image[ImageType.Overlay]);
@@ -507,40 +458,41 @@ namespace LibraryEditor
             ImageList.Images.Clear();
             _indexList.Clear();
 
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
         }
 
         private void countBlanksToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenLibraryDialog.Multiselect = true;
+            throw new NotImplementedException();
+            //OpenLibraryDialog.Multiselect = true;
 
-            if (OpenLibraryDialog.ShowDialog() != DialogResult.OK)
-            {
-                OpenLibraryDialog.Multiselect = false;
-                return;
-            }
+            //if (OpenLibraryDialog.ShowDialog() != DialogResult.OK)
+            //{
+            //    OpenLibraryDialog.Multiselect = false;
+            //    return;
+            //}
 
-            OpenLibraryDialog.Multiselect = false;
+            //OpenLibraryDialog.Multiselect = false;
 
-            MLibraryV2.Load = false;
+            //MLibraryV2.Load = false;
 
-            int count = 0;
+            //int count = 0;
 
-            for (int i = 0; i < OpenLibraryDialog.FileNames.Length; i++)
-            {
-                MLibraryV2 library = new MLibraryV2(OpenLibraryDialog.FileNames[i]);
+            //for (int i = 0; i < OpenLibraryDialog.FileNames.Length; i++)
+            //{
+            //    MLibraryV2 library = new MLibraryV2(OpenLibraryDialog.FileNames[i]);
 
-                for (int x = 0; x < library.Count; x++)
-                {
-                    if (library.Images[x].Length <= 8)
-                        count++;
-                }
+            //    for (int x = 0; x < library.Count; x++)
+            //    {
+            //        if (library.Images[x].Length <= 8)
+            //            count++;
+            //    }
 
-                library.Close();
-            }
+            //    library.Close();
+            //}
 
-            MLibraryV2.Load = true;
-            MessageBox.Show(count.ToString());
+            //MLibraryV2.Load = true;
+            //MessageBox.Show(count.ToString());
         }
 
         private void OffSetXTextBox_TextChanged(object sender, EventArgs e)
@@ -634,14 +586,14 @@ namespace LibraryEditor
                         short.TryParse(placements[1], out y);
                 }
 
-                _library.InsertImage(index, ImageType.Image, ConvertBitmapToImage(image, x, y));
+                _library.InsertImage(index, ImageType.Image, GenerateImage(image, ModificatorType.None, x, y));
 
                 toolStripProgressBar.Value++;
             }
 
             ImageList.Images.Clear();
             _indexList.Clear();
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
             toolStripProgressBar.Value = 0;
 
             using (var fs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
@@ -656,7 +608,7 @@ namespace LibraryEditor
             _library.RemoveBlanks(true);
             ImageList.Images.Clear();
             _indexList.Clear();
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
         }
 
         private const int HowDeepToScan = 6;
@@ -872,8 +824,8 @@ namespace LibraryEditor
 
             ImageList.Images.Clear();
             _indexList.Clear();
-            _library.InsertImage(PreviewListView.SelectedIndices[0], ImageType.Image, ConvertBitmapToImage(newBmp, 0, 0));
-            PreviewListView.VirtualListSize = _library.Length;
+            _library.InsertImage(PreviewListView.SelectedIndices[0], ImageType.Image, GenerateImage(newBmp, ModificatorType.None, 0, 0));
+            PreviewListView.VirtualListSize = _library.Count;
 
             try
             {
@@ -1025,7 +977,7 @@ namespace LibraryEditor
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
 
             OffSetXTextBox.Enabled = true;
             OffSetYTextBox.Enabled = true;
@@ -1046,7 +998,7 @@ namespace LibraryEditor
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
 
             OffSetXTextBox.Enabled = false;
             OffSetYTextBox.Enabled = false;
@@ -1067,7 +1019,7 @@ namespace LibraryEditor
             _indexList.Clear();
 
             PreviewListView.VirtualListSize = 0;
-            PreviewListView.VirtualListSize = _library.Length;
+            PreviewListView.VirtualListSize = _library.Count;
 
             OffSetXTextBox.Enabled = false;
             OffSetYTextBox.Enabled = false;

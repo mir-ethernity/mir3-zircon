@@ -7,6 +7,8 @@ namespace Mir.ImageLibrary.Zircon
 {
     public class ZirconImage : IImage
     {
+        public const int HeaderSize = 25;
+
         private readonly BinaryReader _fileReader;
         private byte[] _buffer;
 
@@ -24,7 +26,6 @@ namespace Mir.ImageLibrary.Zircon
         public short OffsetY { get; internal set; }
 
         public ImageDataType DataType { get; }
-        public static int HeaderSize { get; internal set; }
 
         public ZirconImage(short offsetX, short offsetY, ModificatorType modificator)
         {
@@ -60,7 +61,7 @@ namespace Mir.ImageLibrary.Zircon
             DataType = dataType;
         }
 
-        public ImageData GetData()
+        public byte[] GetBuffer()
         {
             var size = CalculateImageDataSize(Width, Height);
 
@@ -72,7 +73,7 @@ namespace Mir.ImageLibrary.Zircon
                 _buffer = _fileReader.ReadBytes(size);
             }
 
-            return new ImageData { Buffer = _buffer, Type = ImageDataType.Dxt1 };
+            return _buffer;
         }
 
         internal static int CalculateImageDataSize(ushort width, ushort height)

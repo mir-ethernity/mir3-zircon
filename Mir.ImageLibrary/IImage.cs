@@ -15,6 +15,6 @@ namespace Mir.ImageLibrary
         short OffsetX { get; }
         short OffsetY { get; }
 
-        ImageData GetData();
+        byte[] GetBuffer();
     }
 }

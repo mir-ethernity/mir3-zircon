@@ -34,14 +34,10 @@ namespace Mir.ImageLibrary.Wemade
             OffsetY = offsetY;
         }
 
-        public ImageData GetData()
+        public byte[] GetBuffer()
         {
             if (!HasData) throw new Exception();
-            return new ImageData
-            {
-                Type = ImageDataType.RGBA,
-                Buffer = _rgba
-            };
+            return _rgba;
         }
     }
 }

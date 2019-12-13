@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace Mir.ImageLibrary.BitmapConverter.Converters
+namespace Mir.ImageLibrary.Converter.BitmapConverters
 {
     public interface IBitmapConverter
     {

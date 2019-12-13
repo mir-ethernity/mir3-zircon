@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Mir.ImageLibrary.Wemade
@@ -9,12 +10,13 @@ namespace Mir.ImageLibrary.Wemade
         private readonly Stream _mainStream;
         private readonly BinaryReader _mainReader;
         private byte _fileType;
-        protected WemadeSelectorType[] _images;
+        protected IDictionary<ImageType, IImage>[] _images;
         private int _version;
 
-        public IImageSelectorType this[int index] => _images[index];
+        public IDictionary<ImageType, IImage> this[int index] => _images[index];
+
         public string Name { get; private set; }
-        public int Length => _images.Length;
+        public int Count => _images.Length;
 
         public WemadeImageLibrary(string name, byte fileType, Stream mainStream, Stream indexStream)
         {
@@ -95,12 +97,11 @@ namespace Mir.ImageLibrary.Wemade
                 }
 
                 var count = (int)((reader.BaseStream.Length - reader.BaseStream.Position) / 4);
-                _images = new WemadeSelectorType[count];
+                _images = new Dictionary<ImageType, IImage>[count];
 
                 for (var i = 0; i < _images.Length; i++)
                 {
                     var position = reader.ReadInt32();
-                    // _mainStream, _fileType, position
                     CheckImage(i, position);
                 }
             }
@@ -239,7 +240,10 @@ namespace Mir.ImageLibrary.Wemade
             }
 
             var image = new WemadeImage(DecompressPallete(bytes, width, height, is16bit), (ushort)width, (ushort)height, offsetX, offsetY);
-            _images[index] = new WemadeSelectorType(image, null, null);
+            _images[index] = new Dictionary<ImageType, IImage>()
+            {
+                { ImageType.Image, image }
+            };
         }
 
         private void CreateShandaCompressed(int index, int dataPosition, int size, bool is16bit, short width, short height, short offsetX, short offsetY, bool hasShadow, short shadowOffsetX, short shadowOffsetY)
@@ -250,7 +254,10 @@ namespace Mir.ImageLibrary.Wemade
                 deflateStream.Write(_mainReader.ReadBytes(size), 0, size);
                 var bytes = output.ToArray();
                 var image = new WemadeImage(DecompressPallete(bytes, width, height, is16bit), (ushort)width, (ushort)height, offsetX, offsetY);
-                _images[index] = new WemadeSelectorType(image, null, null);
+                _images[index] = new Dictionary<ImageType, IImage>()
+                {
+                    { ImageType.Image, image }
+                };
             }
         }
 
@@ -264,7 +271,10 @@ namespace Mir.ImageLibrary.Wemade
             var bytes = _mainReader.ReadBytes(size);
             var image = new WemadeImage(DecompressPallete(bytes, width, height, is16bit), (ushort)width, (ushort)height, offsetX, offsetY);
 
-            _images[index] = new WemadeSelectorType(image, null, null);
+            _images[index] = new Dictionary<ImageType, IImage>()
+            {
+                { ImageType.Image, image }
+            };
         }
 
         private void CreateWemadeMir3Images(int index, int dataPosition, int size, bool is16bit, short width, short height, short offsetX, short offsetY, bool hasShadow, short shadowOffsetX, short shadowOffsetY)
@@ -340,7 +350,16 @@ namespace Mir.ImageLibrary.Wemade
             var shadow = hasShadow ? new WemadeImage(shadowOffsetX, shadowOffsetY) : null;
             var mask = hasMask ? new WemadeImage(DecompressPallete(pixels[1], width, height, is16bit), (ushort)width, (ushort)height, offsetX, offsetY) : null;
 
-            _images[index] = new WemadeSelectorType(image, shadow, mask);
+            _images[index] = new Dictionary<ImageType, IImage>()
+            {
+                { ImageType.Image, image },
+            };
+
+            if (shadow != null)
+                _images[index].Add(ImageType.Shadow, shadow);
+
+            if (shadow != null)
+                _images[index].Add(ImageType.Overlay, mask);
         }
 
         internal static byte GetFileType(string path)

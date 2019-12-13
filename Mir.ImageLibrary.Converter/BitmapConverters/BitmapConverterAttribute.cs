@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Mir.ImageLibrary.BitmapConverter.Converters
+namespace Mir.ImageLibrary.Converter.BitmapConverters
 {
     internal class BitmapConverterAttribute : Attribute
     {

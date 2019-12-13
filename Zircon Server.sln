@@ -29,13 +29,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.ImageLibrary", "Mir.Ima
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.ImageLibrary.Zircon", "Mir.ImageLibrary.Zircon\Mir.ImageLibrary.Zircon.csproj", "{2BE57DB9-E2A2-4D1B-A0BE-EF846999D8C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mir.ImageLibrary.BitmapConverter", "Mir.ImageLibrary.BitmapConverter\Mir.ImageLibrary.BitmapConverter.csproj", "{32E368C2-BF35-4C46-BF89-549A0C46664C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mir.ImageLibrary.Zircon.Editor", "Mir.ImageLibrary.Zircon.Editor\Mir.ImageLibrary.Zircon.Editor.csproj", "{8198C0CB-9340-44A7-8364-5262BD2D4571}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.ImageLibrary.Zircon.Editor", "Mir.ImageLibrary.Zircon.Editor\Mir.ImageLibrary.Zircon.Editor.csproj", "{8198C0CB-9340-44A7-8364-5262BD2D4571}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Epsylon.TextureSquish", "TextureSquish\Epsylon.TextureSquish.csproj", "{AC40A8AD-8217-48A4-8A00-171199F9AB66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mir.ImageLibrary.Wemade", "Mir.ImageLibrary.Wemade\Mir.ImageLibrary.Wemade.csproj", "{A10D760D-7EBB-471D-B5A4-C42C142DA411}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.ImageLibrary.Wemade", "Mir.ImageLibrary.Wemade\Mir.ImageLibrary.Wemade.csproj", "{A10D760D-7EBB-471D-B5A4-C42C142DA411}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.ImageLibrary.Converter", "Mir.ImageLibrary.Converter\Mir.ImageLibrary.Converter.csproj", "{29A49B6E-D7FD-46B3-8D3A-33497400083C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -214,6 +214,18 @@ Global
 		{A10D760D-7EBB-471D-B5A4-C42C142DA411}.Release|x64.Build.0 = Release|Any CPU
 		{A10D760D-7EBB-471D-B5A4-C42C142DA411}.Release|x86.ActiveCfg = Release|Any CPU
 		{A10D760D-7EBB-471D-B5A4-C42C142DA411}.Release|x86.Build.0 = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|x64.Build.0 = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Debug|x86.Build.0 = Debug|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|x64.ActiveCfg = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|x64.Build.0 = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|x86.ActiveCfg = Release|Any CPU
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +241,7 @@ Global
 		{8198C0CB-9340-44A7-8364-5262BD2D4571} = {09D50F2C-8F30-455D-9F75-C4E84F344F48}
 		{AC40A8AD-8217-48A4-8A00-171199F9AB66} = {09D50F2C-8F30-455D-9F75-C4E84F344F48}
 		{A10D760D-7EBB-471D-B5A4-C42C142DA411} = {09D50F2C-8F30-455D-9F75-C4E84F344F48}
+		{29A49B6E-D7FD-46B3-8D3A-33497400083C} = {09D50F2C-8F30-455D-9F75-C4E84F344F48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A1E6870-A7CB-4165-960E-81486A3F1A0D}

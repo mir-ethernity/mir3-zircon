@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,20 +10,20 @@ namespace Mir.ImageLibrary.Zircon
     {
         private readonly Stream _stream;
         private readonly BinaryReader _reader;
-        protected ZirconSelectorType[] _images;
+        protected IDictionary<ImageType, IImage>[] _images;
 
         public string Name { get; protected set; }
-        public int Length { get => _images?.Length ?? 0; }
+        public int Count { get => _images?.Length ?? 0; }
 
-        public IImageSelectorType this[int index]
+        public IDictionary<ImageType, IImage> this[int index]
         {
             get { return _images[index]; }
-            internal set { _images[index] = (ZirconSelectorType)value; }
+            internal set { _images[index] = value; }
         }
 
         internal ZirconImageLibrary()
         {
-            _images = new ZirconSelectorType[0];
+            _images = new IDictionary<ImageType, IImage>[0];
             Name = string.Empty;
         }
 
@@ -60,7 +61,7 @@ namespace Mir.ImageLibrary.Zircon
             using (var br = new BinaryReader(ms))
             {
                 var count = br.ReadInt32();
-                _images = new ZirconSelectorType[count];
+                _images = new IDictionary<ImageType, IImage>[count];
 
                 for (var i = 0; i < _images.Length; i++)
                 {
@@ -81,7 +82,7 @@ namespace Mir.ImageLibrary.Zircon
                     var shadowTypeByte = br.ReadByte();
                     var shadowModificatorType = shadowTypeByte == 177 || shadowTypeByte == 176 || shadowTypeByte == 49
                         ? ModificatorType.Transform
-                        : ModificatorType.Opacity;
+                        : (shadowTypeByte == 50 ? ModificatorType.Opacity : ModificatorType.None);
 
                     var shadowWidth = br.ReadUInt16();
                     var shadowHeight = br.ReadUInt16();
@@ -106,11 +107,19 @@ namespace Mir.ImageLibrary.Zircon
                     }
 
                     if (overlayWidth > 0 && overlayHeight > 0)
-                    {
-                        overlay = new ZirconImage(offset, overlayWidth, overlayHeight, offsetX, offsetY, ModificatorType.None, dataType, _reader);
-                    }
+                    overlay = new ZirconImage(offset, overlayWidth, overlayHeight, offsetX, offsetY, ModificatorType.None, dataType, _reader);
 
-                    _images[i] = new ZirconSelectorType(image, shadow, overlay);
+
+                    _images[i] = new Dictionary<ImageType, IImage>()
+                    {
+                        { ImageType.Image, image },
+                    };
+
+                    if (shadow != null)
+                        _images[i].Add(ImageType.Shadow, shadow);
+
+                    if (shadow != null)
+                        _images[i].Add(ImageType.Overlay, overlay);
                 }
             }
         }
