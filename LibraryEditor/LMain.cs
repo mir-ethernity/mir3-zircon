@@ -98,7 +98,7 @@ namespace LibraryEditor
             bitmap.UnlockBits(data);
 
 
-            return _library.CreateImageFromRGBA((ushort)bitmap.Width, (ushort)bitmap.Height, offsetX, offsetY, modificator, pixels);
+            return _library.CreateImageFromRGBA((ushort)bitmap.Width, (ushort)bitmap.Height, offsetX, offsetY, modificator, pixels, ImageDataType.Dxt5);
         }
 
         private Bitmap CreatePreview(IImage image)

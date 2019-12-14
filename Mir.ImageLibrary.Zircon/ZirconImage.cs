@@ -7,12 +7,13 @@ namespace Mir.ImageLibrary.Zircon
 {
     public class ZirconImage : IImage
     {
-        public const int HeaderSize = 25;
+        public const int HeaderSize = 40;
 
         private readonly BinaryReader _fileReader;
         private byte[] _buffer;
 
         public bool HasData { get; }
+        public int ImageLength { get; }
         public ModificatorType Modificator { get; }
 
         public int Position { get; internal set; }
@@ -35,10 +36,11 @@ namespace Mir.ImageLibrary.Zircon
             Modificator = modificator;
         }
 
-        public ZirconImage(int position, ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, ImageDataType dataType, BinaryReader fileReader)
+        public ZirconImage(int position, int imageLength, ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, ImageDataType dataType, BinaryReader fileReader)
         {
             _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
             HasData = true;
+            ImageLength = imageLength;
             Position = position;
             Width = width;
             Height = height;
@@ -51,6 +53,7 @@ namespace Mir.ImageLibrary.Zircon
         public ZirconImage(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, ImageDataType dataType, byte[] buffer)
         {
             _buffer = buffer ?? throw new ArgumentNullException(nameof(buffer));
+            ImageLength = _buffer.Length;
             Position = 0;
             HasData = true;
             Width = width;
@@ -63,24 +66,15 @@ namespace Mir.ImageLibrary.Zircon
 
         public byte[] GetBuffer()
         {
-            var size = CalculateImageDataSize(Width, Height);
-
             if (_buffer == null && _fileReader == null) throw new ApplicationException();
 
             if (_buffer == null)
             {
                 _fileReader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                _buffer = _fileReader.ReadBytes(size);
+                _buffer = _fileReader.ReadBytes(ImageLength);
             }
 
             return _buffer;
-        }
-
-        internal static int CalculateImageDataSize(ushort width, ushort height)
-        {
-            int w = width + (4 - width % 4) % 4;
-            int h = height + (4 - height % 4) % 4;
-            return (w * h) / 2;
         }
     }
 }

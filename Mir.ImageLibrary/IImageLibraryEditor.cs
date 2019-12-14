@@ -5,7 +5,8 @@ namespace Mir.ImageLibrary
 {
     public interface IImageLibraryEditor : IImageLibrary
     {
-        IImage CreateImageFromRGBA(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] rgba);
+        IImage CreateImageFromRGBA(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] rgba, ImageDataType destinationDataType);
+        IImage CreateImageFromTexture(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] texture, ImageDataType textureDataType);
         IImage CreateImageWithoutData(short offsetX, short offsetY, ModificatorType modificator);
 
         void AddEmptyImage();

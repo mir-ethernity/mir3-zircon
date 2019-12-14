@@ -26,8 +26,8 @@ namespace Mir.ImageLibrary.Converter
                     if (type.Value.HasData)
                     {
                         var buffer = type.Value.GetBuffer();
-                        var rgba = BitmapConverter.ConvertTextureToBitmap(image.DataType, image.Width, image.Height, buffer);
-                        var newImage = editor.CreateImageFromRGBA(image.Width, image.Height, image.OffsetX, image.OffsetY, image.Modificator, rgba);
+                        // var rgba = BitmapConverter.ConvertTextureToBitmap(image.DataType, image.Width, image.Height, buffer);
+                        var newImage = editor.CreateImageFromTexture(image.Width, image.Height, image.OffsetX, image.OffsetY, image.Modificator, buffer, image.DataType);
                         editor.AddImage(imageType, newImage);
                     }
                     else

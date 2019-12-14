@@ -1,4 +1,6 @@
 ﻿
+using Epsylon.TextureSquish;
+
 namespace Mir.ImageLibrary.Converter.BitmapConverters
 {
     [BitmapConverter(ImageDataType.Dxt5)]
@@ -14,8 +16,8 @@ namespace Mir.ImageLibrary.Converter.BitmapConverters
                 rgba[i + 2] = b;
             }
 
-            var bitmap = new Epsylon.TextureSquish.Bitmap(rgba, width, height);
-            return bitmap.Compress(Epsylon.TextureSquish.CompressionMode.Dxt5, Epsylon.TextureSquish.CompressionOptions.None);
+            var bitmap = new Bitmap(rgba, width, height);
+            return bitmap.Compress(CompressionMode.Dxt5, CompressionOptions.None);
         }
 
         public byte[] ConvertTextureToBitmap(int width, int height, byte[] buffer)

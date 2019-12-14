@@ -98,22 +98,52 @@ namespace Mir.ImageLibrary.Zircon.Editor
         {
             int headerSize = 4 + _images.Length;
 
+            IDictionary<ImageType, byte[]>[] cacheTextures = new IDictionary<ImageType, byte[]>[_images.Length];
+
+            for(var i = 0; i < _images.Length; i++)
+            {
+                var image = _images[i];
+                if (image == null) continue;
+
+                var dict = new Dictionary<ImageType, byte[]>();
+
+                var data = image[ImageType.Image].GetBuffer();
+
+                dict.Add(ImageType.Image, data);
+
+                if (image.ContainsKey(ImageType.Shadow) && image[ImageType.Shadow].HasData)
+                {
+                    data = image[ImageType.Shadow].GetBuffer();
+                    dict.Add(ImageType.Shadow, data);
+                }
+
+                if (image.ContainsKey(ImageType.Overlay))
+                {
+                    data = image[ImageType.Overlay].GetBuffer();
+                    dict.Add(ImageType.Overlay, data);
+                }
+
+                cacheTextures[i] = dict;
+            }
+
+
             foreach (var image in _images)
             {
                 if (image == null) continue;
                 headerSize += ZirconImage.HeaderSize;
             }
 
-            int position = headerSize + 4;
+            int position = headerSize + 4 + 6 + 2;
 
-            foreach (var image in _images)
+            for(var i = 0; i < _images.Length; i++)
             {
+                var image = _images[i];
                 if (image == null) continue;
 
                 if (image.ContainsKey(ImageType.Image))
                 {
-                    var zircon = ((ZirconImage)image[ImageType.Image]).Position = position;
-                    position += ZirconImage.CalculateImageDataSize(image[ImageType.Image].Width, image[ImageType.Image].Height);
+                    ((ZirconImage)image[ImageType.Image]).Position = position;
+                    position += cacheTextures[i][ImageType.Image].Length;
                 }
                 else
                 {
@@ -122,14 +152,14 @@ namespace Mir.ImageLibrary.Zircon.Editor
 
                 if (image.ContainsKey(ImageType.Shadow) && image[ImageType.Shadow].HasData)
                 {
-                    var zircon = ((ZirconImage)image[ImageType.Shadow]).Position = position;
-                    position += ZirconImage.CalculateImageDataSize(image[ImageType.Shadow].Width, image[ImageType.Shadow].Height);
+                    ((ZirconImage)image[ImageType.Shadow]).Position = position;
+                    position += cacheTextures[i][ImageType.Shadow].Length;
                 }
 
                 if (image.ContainsKey(ImageType.Overlay))
                 {
-                    var zircon = ((ZirconImage)image[ImageType.Overlay]).Position = position;
-                    position += ZirconImage.CalculateImageDataSize(image[ImageType.Overlay].Width, image[ImageType.Overlay].Height);
+                    ((ZirconImage)image[ImageType.Overlay]).Position = position;
+                    position += cacheTextures[i][ImageType.Shadow].Length;
                 }
             }
 
@@ -137,11 +167,15 @@ namespace Mir.ImageLibrary.Zircon.Editor
             using (MemoryStream buffer = new MemoryStream())
             using (BinaryWriter writer = new BinaryWriter(buffer))
             {
+                writer.Write(Encoding.ASCII.GetBytes("ZIRCON"), 0, 6);
+                writer.Write((ushort)1); // version
+
                 writer.Write(headerSize);
                 writer.Write(Count);
 
-                foreach (var image in _images)
+                for(var i = 0; i < _images.Length; i++)
                 {
+                    var image = _images[i];
                     writer.Write(image != null);
                     if (image == null) continue;
 
@@ -154,6 +188,8 @@ namespace Mir.ImageLibrary.Zircon.Editor
                     writer.Write(img.Height);
                     writer.Write(img.OffsetX);
                     writer.Write(img.OffsetY);
+                    writer.Write((byte)img.DataType);
+                    writer.Write(cacheTextures[i][ImageType.Image].Length);
 
                     writer.Write((byte)(shadow?.Modificator == ModificatorType.Transform
                         ? 49
@@ -165,28 +201,30 @@ namespace Mir.ImageLibrary.Zircon.Editor
                     writer.Write((ushort)(shadow?.Height ?? 0));
                     writer.Write((short)(shadow?.OffsetX ?? 0));
                     writer.Write((short)(shadow?.OffsetY ?? 0));
+                    writer.Write(((byte?)shadow?.DataType) ?? 0);
+                    writer.Write(image.ContainsKey(ImageType.Shadow) && image[ImageType.Shadow].HasData ? cacheTextures[i][ImageType.Shadow].Length : 0);
 
                     writer.Write((ushort)(overlay?.Width ?? 0));
                     writer.Write((ushort)(overlay?.Height ?? 0));
+                    writer.Write(((byte?)overlay?.DataType) ?? 0);
+                    writer.Write(image.ContainsKey(ImageType.Overlay) ? cacheTextures[i][ImageType.Overlay].Length : 0);
                 }
 
-                foreach (var image in _images)
+                for(var i = 0; i < _images.Length; i++)
                 {
+                    var image = _images[i];
                     if (image == null) continue;
 
-                    var data = image[ImageType.Image].GetBuffer();
-                    writer.Write(data);
+                    writer.Write(cacheTextures[i][ImageType.Image]);
 
                     if (image.ContainsKey(ImageType.Shadow) && image[ImageType.Shadow].HasData)
                     {
-                        data = image[ImageType.Shadow].GetBuffer();
-                        writer.Write(data);
+                        writer.Write(cacheTextures[i][ImageType.Shadow]);
                     }
 
                     if (image.ContainsKey(ImageType.Overlay))
                     {
-                        data = image[ImageType.Overlay].GetBuffer();
-                        writer.Write(data);
+                        writer.Write(cacheTextures[i][ImageType.Overlay]);
                     }
                 }
 
@@ -195,10 +233,15 @@ namespace Mir.ImageLibrary.Zircon.Editor
             }
         }
 
-        public IImage CreateImageFromRGBA(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] rgba)
+        public IImage CreateImageFromRGBA(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] rgba, ImageDataType destinationDataType)
         {
-            var texture = BitmapConverter.ConvertBitmapToTexture(ImageDataType.Dxt1, width, height, rgba);
-            return new ZirconImage(width, height, offsetX, offsetY, modificator, ImageDataType.Dxt1, texture);
+            var texture = BitmapConverter.ConvertBitmapToTexture(destinationDataType, width, height, rgba);
+            return new ZirconImage(width, height, offsetX, offsetY, modificator, destinationDataType, texture);
+        }
+
+        public IImage CreateImageFromTexture(ushort width, ushort height, short offsetX, short offsetY, ModificatorType modificator, byte[] texture, ImageDataType textureDataType)
+        {
+            return new ZirconImage(width, height, offsetX, offsetY, modificator, textureDataType, texture);
         }
 
         public IImage CreateImageWithoutData(short offsetX, short offsetY, ModificatorType modificator)

@@ -31,7 +31,10 @@ namespace Mir.ImageLibrary.Wemade
         {
             FilePath = path;
             Name = Path.GetFileNameWithoutExtension(path);
-            _stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            //_stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            //_reader = new BinaryReader(_stream);
+
+            _stream = new MemoryStream(File.ReadAllBytes(path));
             _reader = new BinaryReader(_stream);
 
             InitializeLibrary();
@@ -93,13 +96,12 @@ namespace Mir.ImageLibrary.Wemade
                 var hasMask = maskTextureType > 0;
                 var length = _reader.ReadInt32();
                 if (length % 4 > 0) length += 4 - (length % 4);
-                var dataOffset = (int)_reader.BaseStream.Position;
 
-                var buffer = ReadImage(_reader, length, width, height, imageTextureType, out ImageDataType dataType);
+                var buffer = ReadImage(index, _reader, length, width, height, imageTextureType, out ImageDataType dataType);
                 mainImage = new WTLImage(width, height, x, y, ModificatorType.None, dataType, buffer);
                 if (hasMask)
                 {
-                    buffer = ReadImage(_reader, length, width, height, imageTextureType, out ImageDataType dataTypeMask);
+                    buffer = ReadImage(index, _reader, length, width, height, imageTextureType, out ImageDataType dataTypeMask);
                     maskImage = new WTLImage(width, height, x, y, ModificatorType.None, dataTypeMask, buffer);
 
                     if (_shadowLibrary != null && _shadowLibrary.Count > index && _shadowLibrary[index] != null)
@@ -129,11 +131,11 @@ namespace Mir.ImageLibrary.Wemade
                 _images[index].Add(ImageType.Overlay, maskImage);
         }
 
-        public unsafe byte[] ReadImage(BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, byte textureType, out ImageDataType dataType)
+        public unsafe byte[] ReadImage(int index, BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, byte textureType, out ImageDataType dataType)
         {
             return IsNewVersion
-                ? DecompressV2Texture(bReader, imageLength, outputWidth, outputHeight, textureType, out dataType)
-                : DecompressV1Texture(bReader, imageLength, outputWidth, outputHeight, out dataType);
+                ? DecompressV2Texture(index, bReader, imageLength, outputWidth, outputHeight, textureType, out dataType)
+                : DecompressV1Texture(index, bReader, imageLength, outputWidth, outputHeight, out dataType);
         }
 
         public void Dispose()
@@ -200,7 +202,7 @@ namespace Mir.ImageLibrary.Wemade
             }
         }
 
-        private unsafe byte[] DecompressV1Texture(BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, out ImageDataType dataType)
+        private unsafe byte[] DecompressV1Texture(int index, BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, out ImageDataType dataType)
         {
             dataType = ImageDataType.RGBA;
 
@@ -297,10 +299,8 @@ namespace Mir.ImageLibrary.Wemade
         }
 
 
-        private unsafe byte[] DecompressV2Texture(BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, byte textureType, out ImageDataType dataType)
+        private unsafe byte[] DecompressV2Texture(int index, BinaryReader bReader, int imageLength, ushort outputWidth, ushort outputHeight, byte textureType, out ImageDataType dataType)
         {
-            dataType = ImageDataType.RGBA;
-
             var buffer = bReader.ReadBytes(imageLength);
 
             int w = outputWidth + (4 - outputWidth % 4) % 4;
@@ -325,8 +325,6 @@ namespace Mir.ImageLibrary.Wemade
                     type = ImageDataType.Dxt1;
                     break;
                 case 3:
-                    type = ImageDataType.Dxt3;
-                    break;
                 case 5:
                     type = ImageDataType.Dxt5;
                     break;
@@ -337,7 +335,7 @@ namespace Mir.ImageLibrary.Wemade
 
             var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
 
-            var bitmapData = BitmapConverter.ConvertTextureToBitmap(type, w, h, decompressedBuffer);
+            var bitmapData = BitmapConverter.ConvertTextureToBitmap(type, w, outputHeight, decompressedBuffer);
             var newBuffer = new byte[outputWidth * outputHeight * 4];
 
             var sourceRowSize = w * 4;
@@ -348,18 +346,17 @@ namespace Mir.ImageLibrary.Wemade
             {
                 var sourceStartOffset = sourceRowSize * r;
                 var destStartOffset = destRowSize * r;
-                var dataLength = sourceStartOffset + destRowSize > newBuffer.Length ? newBuffer.Length - destStartOffset : destRowSize;
-
+                var dataLength = destStartOffset + destRowSize > newBuffer.Length ? newBuffer.Length - destStartOffset : destRowSize;
+                if (dataLength < 0) break;
                 Array.Copy(bitmapData, sourceStartOffset, newBuffer, destStartOffset, dataLength);
             }
 
+            dataType = ImageDataType.RGBA;
             return newBuffer;
-            //using (var x = Image.LoadPixelData<Rgba32>(bitmapData, w, h))
-            //{
-            //    x.Mutate(c => c.Crop(new SixLabors.Primitives.Rectangle(0, 0, outputWidth, outputHeight)));
 
-            //    return MemoryMarshal.AsBytes(x.GetPixelSpan()).ToArray();
-            //}
+            // reconvert without black area
+            //dataType = type;
+            //return BitmapConverter.ConvertBitmapToTexture(dataType, outputWidth, outputHeight, newBuffer);
         }
 
 

@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Mir.ImageLibrary.Zircon
 {
     public class ZirconImageLibrary : IImageLibrary
     {
-        private readonly Stream _stream;
-        private readonly BinaryReader _reader;
+        public ushort Version { get; protected set; }
+        private Stream _stream;
+        private BinaryReader _reader;
         protected IDictionary<ImageType, IImage>[] _images;
 
         public string Name { get; protected set; }
@@ -43,9 +45,26 @@ namespace Mir.ImageLibrary.Zircon
 
         public void Dispose()
         {
-            _stream.Dispose();
-            _reader.Dispose();
+            _stream?.Dispose();
+            _reader?.Dispose();
             _images = null;
+            _stream = null;
+            _reader = null;
+        }
+
+        private int GetImageLength(BinaryReader br, ushort width, ushort height)
+        {
+            if (Version > 0)
+            {
+                return br.ReadInt32();
+            }
+            else
+            {
+                if (width == 0 && height == 0) return 0;
+                int w = width + (4 - width % 4) % 4;
+                int h = height + (4 - height % 4) % 4;
+                return (w * h) / 2;
+            }
         }
 
         private void InitializeLibrary()
@@ -53,6 +72,18 @@ namespace Mir.ImageLibrary.Zircon
             if (_stream == null) return;
 
             _stream.Seek(0, SeekOrigin.Begin);
+
+            var libNameBuff = _reader.ReadBytes(6);
+            var libName = Encoding.ASCII.GetString(libNameBuff);
+            if (libName.Equals("ZIRCON"))
+            {
+                Version = _reader.ReadUInt16();
+            }
+            else
+            {
+                Version = 0;
+                _stream.Seek(0, SeekOrigin.Begin);
+            }
 
             var headerBufferSize = _reader.ReadInt32();
             var headerBuffer = _reader.ReadBytes(headerBufferSize);
@@ -71,13 +102,15 @@ namespace Mir.ImageLibrary.Zircon
                     ZirconImage shadow = null;
                     ZirconImage overlay = null;
 
-                    var dataType = ImageDataType.Dxt1;
                     var offset = br.ReadInt32();
 
                     var width = br.ReadUInt16();
                     var height = br.ReadUInt16();
                     var offsetX = br.ReadInt16();
                     var offsetY = br.ReadInt16();
+                    var dataType = ImageDataType.Dxt1;
+                    if (Version > 0) dataType = (ImageDataType)br.ReadByte();
+                    var imageLength = GetImageLength(br, width, height);
 
                     var shadowTypeByte = br.ReadByte();
                     var shadowModificatorType = shadowTypeByte == 177 || shadowTypeByte == 176 || shadowTypeByte == 49
@@ -88,26 +121,35 @@ namespace Mir.ImageLibrary.Zircon
                     var shadowHeight = br.ReadUInt16();
                     var shadowOffsetX = br.ReadInt16();
                     var shadowOffsetY = br.ReadInt16();
+                    var shadowDataType = ImageDataType.Dxt1;
+                    if (Version > 0) shadowDataType = (ImageDataType)br.ReadByte();
+                    var shadowImageLength = GetImageLength(br, width, height) ;
 
                     var overlayWidth = br.ReadUInt16();
                     var overlayHeight = br.ReadUInt16();
+                    var overlayDataType = ImageDataType.Dxt1;
+                    if (Version > 0) overlayDataType = (ImageDataType)br.ReadByte();
+                    var overlayImageLength = GetImageLength(br, overlayWidth, overlayHeight);
 
-                    image = new ZirconImage(offset, width, height, offsetX, offsetX, ModificatorType.None, dataType, _reader);
 
-                    offset += ZirconImage.CalculateImageDataSize(width, height);
+                    image = new ZirconImage(offset, imageLength, width, height, offsetX, offsetX, ModificatorType.None, dataType, _reader);
+
+                    offset += imageLength;
 
                     if ((shadowWidth > 0 && shadowHeight > 0) || shadowOffsetX != 0 && shadowOffsetY != 0)
                     {
                         shadow = shadowWidth == 0 || shadowHeight == 0
                             ? new ZirconImage(offsetX, offsetY, shadowModificatorType)
-                            : new ZirconImage(offset, shadowWidth, shadowHeight, shadowOffsetX, shadowOffsetY, shadowModificatorType, dataType, _reader);
+                            : new ZirconImage(offset, shadowImageLength, shadowWidth, shadowHeight, shadowOffsetX, shadowOffsetY, shadowModificatorType, shadowDataType, _reader);
 
                         if (shadowWidth > 0 && shadowHeight > 0)
-                            offset += ZirconImage.CalculateImageDataSize(shadowWidth, shadowHeight);
+                        {
+                            offset += shadowImageLength;
+                        }
                     }
 
                     if (overlayWidth > 0 && overlayHeight > 0)
-                    overlay = new ZirconImage(offset, overlayWidth, overlayHeight, offsetX, offsetY, ModificatorType.None, dataType, _reader);
+                        overlay = new ZirconImage(offset, overlayImageLength, overlayWidth, overlayHeight, offsetX, offsetY, ModificatorType.None, overlayDataType, _reader);
 
 
                     _images[i] = new Dictionary<ImageType, IImage>()
