@@ -172,7 +172,7 @@ namespace Client.Scenes
                 Parent = background,
                 UseOffSet = true,
             };
-            
+
             ConfigButton = new DXButton
             {
                 LibraryFile = LibraryFile.GameInter,
@@ -242,8 +242,7 @@ namespace Client.Scenes
             };
             RequestActivationBox.Location = new Point((Size.Width - RequestActivationBox.Size.Width) / 2, (Size.Height - RequestActivationBox.Size.Height) / 2);
 
-
-
+         
             DXSoundManager.Play(SoundIndex.LoginScene);
         }
         

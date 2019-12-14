@@ -435,7 +435,7 @@ namespace Client.Envir
         public short Height;
         public short OffSetX;
         public short OffSetY;
-        public byte ShadowType;
+        public Format DataType;
         public Texture Image;
         public bool ImageValid { get; private set; }
         public unsafe byte* ImageData;
@@ -452,11 +452,13 @@ namespace Client.Envir
         #endregion
 
         #region Shadow
+        public byte ShadowType;
         public short ShadowWidth;
         public short ShadowHeight;
 
         public short ShadowOffSetX;
         public short ShadowOffSetY;
+        public Format ShadowDataType;
 
         public Texture Shadow;
         public bool ShadowValid { get; private set; }
@@ -476,6 +478,7 @@ namespace Client.Envir
         #region Overlay
         public short OverlayWidth;
         public short OverlayHeight;
+        public Format OverlayDataType;
 
         public Texture Overlay;
         public bool OverlayValid { get; private set; }
@@ -529,6 +532,7 @@ namespace Client.Envir
                         Height = (short)img.Value.Height;
                         OffSetX = img.Value.OffsetX;
                         OffSetY = img.Value.OffsetY;
+                        DataType = DataTypeToFormat(img.Value.DataType);
                         break;
                     case Mir.ImageLibrary.ImageType.Shadow:
                         ShadowType = (byte)(img.Value.Modificator == ModificatorType.None ? 0 : (img.Value.Modificator == ModificatorType.Opacity ? 50 : 49));
@@ -536,12 +540,30 @@ namespace Client.Envir
                         ShadowHeight = (short)img.Value.Height;
                         ShadowOffSetX = img.Value.OffsetX;
                         ShadowOffSetY = img.Value.OffsetY;
+                        ShadowDataType = DataTypeToFormat(img.Value.DataType);
                         break;
                     case Mir.ImageLibrary.ImageType.Overlay:
                         OverlayWidth = (short)img.Value.Width;
                         OverlayHeight = (short)img.Value.Height;
+                        OverlayDataType = DataTypeToFormat(img.Value.DataType);
                         break;
                 }
+            }
+        }
+
+        private Format DataTypeToFormat(ImageDataType dataType)
+        {
+            switch (dataType)
+            {
+                case ImageDataType.RGBA:
+                case ImageDataType.Dxt1:
+                    return Format.Dxt1;
+                case ImageDataType.Dxt3:
+                    return Format.Dxt3;
+                case ImageDataType.Dxt5:
+                    return Format.Dxt5;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -610,7 +632,7 @@ namespace Client.Envir
 
             if (w == 0 || h == 0) return;
 
-            Image = new Texture(DXManager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Image = new Texture(DXManager.Device, w, h, 1, Usage.None, DataType, Pool.Managed);
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
             ImageData = (byte*)rect.Data.DataPointer;
 
@@ -634,7 +656,7 @@ namespace Client.Envir
 
             if (w == 0 || h == 0) return;
 
-            Shadow = new Texture(DXManager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Shadow = new Texture(DXManager.Device, w, h, 1, Usage.None, ShadowDataType, Pool.Managed);
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
             ShadowData = (byte*)rect.Data.DataPointer;
 
@@ -656,7 +678,7 @@ namespace Client.Envir
 
             if (w == 0 || h == 0) return;
 
-            Overlay = new Texture(DXManager.Device, w, h, 1, Usage.None, Format.Dxt1, Pool.Managed);
+            Overlay = new Texture(DXManager.Device, w, h, 1, Usage.None, OverlayDataType, Pool.Managed);
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
             OverlayData = (byte*)rect.Data.DataPointer;
 
