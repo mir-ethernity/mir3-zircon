@@ -21,9 +21,6 @@ namespace Client.Envir
         public string FileName;
         private IImageLibrary _imageLibrary;
 
-        //private FileStream _FStream;
-        //private BinaryReader _BReader;
-
         public bool Loaded, Loading;
 
         public MirImage[] Images;
@@ -32,8 +29,6 @@ namespace Client.Envir
         {
             FileName = fileName;
             _imageLibrary = new ZirconImageLibrary(fileName);
-            //_FStream = File.OpenRead(fileName);
-            //_BReader = new BinaryReader(_FStream);
         }
         public void ReadLibrary()
         {
@@ -41,30 +36,12 @@ namespace Client.Envir
             {
                 if (Loading) return;
                 Loading = true;
+                _imageLibrary.Initialize();
             }
 
             Images = new MirImage[_imageLibrary.Count];
             for (var i = 0; i < _imageLibrary.Count; i++)
                 Images[i] = _imageLibrary[i] != null ? new MirImage(_imageLibrary[i]) : null;
-
-            //if (_BReader == null)
-            //{
-            //    Loaded = true;
-            //    return;
-            //}
-
-            //using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
-            //using (BinaryReader reader = new BinaryReader(mstream))
-            //{
-            //    Images = new MirImage[reader.ReadInt32()];
-
-            //    for (int i = 0; i < Images.Length; i++)
-            //    {
-            //        if (!reader.ReadBoolean()) continue;
-
-            //        Images[i] = new MirImage(reader);
-            //    }
-            //}
 
             Loaded = true;
         }
@@ -439,16 +416,6 @@ namespace Client.Envir
         public Texture Image;
         public bool ImageValid { get; private set; }
         public unsafe byte* ImageData;
-        //public int ImageDataSize
-        //{
-        //    get
-        //    {
-        //        int w = Width + (4 - Width % 4) % 4;
-        //        int h = Height + (4 - Height % 4) % 4;
-
-        //        return w * h / 2;
-        //    }
-        //}
         #endregion
 
         #region Shadow
@@ -498,25 +465,6 @@ namespace Client.Envir
 
         public DateTime ExpireTime;
         private readonly IDictionary<Mir.ImageLibrary.ImageType, IImage> _images;
-
-        //public MirImage(BinaryReader reader)
-        //{
-        //    Position = reader.ReadInt32();
-
-        //    Width = reader.ReadInt16();
-        //    Height = reader.ReadInt16();
-        //    OffSetX = reader.ReadInt16();
-        //    OffSetY = reader.ReadInt16();
-
-        //    ShadowType = reader.ReadByte();
-        //    ShadowWidth = reader.ReadInt16();
-        //    ShadowHeight = reader.ReadInt16();
-        //    ShadowOffSetX = reader.ReadInt16();
-        //    ShadowOffSetY = reader.ReadInt16();
-
-        //    OverlayWidth = reader.ReadInt16();
-        //    OverlayHeight = reader.ReadInt16();
-        //}
 
         public MirImage(IDictionary<Mir.ImageLibrary.ImageType, IImage> images)
         {
@@ -593,7 +541,6 @@ namespace Client.Envir
 
             return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
         }
-
 
         public unsafe void DisposeTexture()
         {

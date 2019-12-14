@@ -9,6 +9,7 @@ namespace Mir.ImageLibrary.Wemade
         private int[] _palette;
         private readonly Stream _mainStream;
         private readonly BinaryReader _mainReader;
+        private readonly Stream _indexStream;
         private byte _fileType;
         protected IDictionary<ImageType, IImage>[] _images;
         private int _version;
@@ -22,10 +23,9 @@ namespace Mir.ImageLibrary.Wemade
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _fileType = fileType;
+            _indexStream = indexStream ?? throw new ArgumentNullException(nameof(indexStream));
             _mainStream = mainStream ?? throw new ArgumentNullException(nameof(mainStream));
             _mainReader = new BinaryReader(_mainStream);
-
-            InitializeLibrary(indexStream);
         }
 
         public WemadeImageLibrary(string path)
@@ -42,13 +42,12 @@ namespace Mir.ImageLibrary.Wemade
         {
             _mainStream.Dispose();
             _mainReader.Dispose();
+            _indexStream.Dispose();
             _images = null;
         }
 
-        private void InitializeLibrary(Stream indexStream)
+        public void Initialize()
         {
-            if (indexStream == null) throw new ArgumentNullException(nameof(indexStream));
-
             _mainStream.Seek(0, SeekOrigin.Begin);
 
             byte[] buffer;
@@ -70,40 +69,38 @@ namespace Mir.ImageLibrary.Wemade
                 }
             }
 
-            LoadIndexFile(indexStream);
+            LoadIndexFile();
         }
 
-        private void LoadIndexFile(Stream indexStream)
+        private void LoadIndexFile()
         {
-            using (indexStream)
-            using (BinaryReader reader = new BinaryReader(indexStream))
+            _indexStream.Seek(0, SeekOrigin.Begin);
+            BinaryReader reader = new BinaryReader(_indexStream);
+            switch (_fileType)
             {
-                switch (_fileType)
-                {
-                    case 4:
-                        indexStream.Seek(24, SeekOrigin.Begin);
-                        break;
-                    case 3:
-                        reader.ReadBytes(26);
-                        if (reader.ReadUInt16() != 0xB13A)
-                            indexStream.Seek(24, SeekOrigin.Begin);
-                        break;
-                    case 2:
-                        reader.ReadBytes(52);
-                        break;
-                    default:
-                        reader.ReadBytes(_version == 0 ? 48 : 52);
-                        break;
-                }
+                case 4:
+                    _indexStream.Seek(24, SeekOrigin.Begin);
+                    break;
+                case 3:
+                    reader.ReadBytes(26);
+                    if (reader.ReadUInt16() != 0xB13A)
+                        _indexStream.Seek(24, SeekOrigin.Begin);
+                    break;
+                case 2:
+                    reader.ReadBytes(52);
+                    break;
+                default:
+                    reader.ReadBytes(_version == 0 ? 48 : 52);
+                    break;
+            }
 
-                var count = (int)((reader.BaseStream.Length - reader.BaseStream.Position) / 4);
-                _images = new Dictionary<ImageType, IImage>[count];
+            var count = (int)((reader.BaseStream.Length - reader.BaseStream.Position) / 4);
+            _images = new Dictionary<ImageType, IImage>[count];
 
-                for (var i = 0; i < _images.Length; i++)
-                {
-                    var position = reader.ReadInt32();
-                    CheckImage(i, position);
-                }
+            for (var i = 0; i < _images.Length; i++)
+            {
+                var position = reader.ReadInt32();
+                CheckImage(i, position);
             }
         }
 

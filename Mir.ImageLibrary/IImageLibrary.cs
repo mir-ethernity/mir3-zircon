@@ -9,5 +9,7 @@ namespace Mir.ImageLibrary
         string Name { get; }
         int Count { get; }
         IDictionary<ImageType, IImage> this[int index] { get; }
+
+        void Initialize();
     }
 }

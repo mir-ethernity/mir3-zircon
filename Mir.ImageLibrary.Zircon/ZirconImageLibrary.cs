@@ -34,8 +34,6 @@ namespace Mir.ImageLibrary.Zircon
             Name = name ?? throw new ArgumentNullException(nameof(name));
             _stream = stream ?? throw new ArgumentNullException(nameof(stream));
             _reader = new BinaryReader(_stream);
-
-            InitializeLibrary();
         }
 
         public ZirconImageLibrary(string zlPath)
@@ -67,7 +65,7 @@ namespace Mir.ImageLibrary.Zircon
             }
         }
 
-        private void InitializeLibrary()
+        public void Initialize()
         {
             if (_stream == null) return;
 
@@ -123,7 +121,7 @@ namespace Mir.ImageLibrary.Zircon
                     var shadowOffsetY = br.ReadInt16();
                     var shadowDataType = ImageDataType.Dxt1;
                     if (Version > 0) shadowDataType = (ImageDataType)br.ReadByte();
-                    var shadowImageLength = GetImageLength(br, width, height) ;
+                    var shadowImageLength = GetImageLength(br, width, height);
 
                     var overlayWidth = br.ReadUInt16();
                     var overlayHeight = br.ReadUInt16();

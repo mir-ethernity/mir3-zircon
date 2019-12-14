@@ -66,15 +66,16 @@ namespace Mir.ImageLibrary.Zircon
 
         public byte[] GetBuffer()
         {
-            if (_buffer == null && _fileReader == null) throw new ApplicationException();
+            var result = _buffer;
+            if (result == null && _fileReader == null) throw new ApplicationException();
 
-            if (_buffer == null)
+            if (result == null)
             {
                 _fileReader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                _buffer = _fileReader.ReadBytes(ImageLength);
+                result = _fileReader.ReadBytes(ImageLength);
             }
 
-            return _buffer;
+            return result;
         }
     }
 }

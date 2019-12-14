@@ -36,11 +36,9 @@ namespace Mir.ImageLibrary.Wemade
 
             _stream = new MemoryStream(File.ReadAllBytes(path));
             _reader = new BinaryReader(_stream);
-
-            InitializeLibrary();
         }
 
-        private void InitializeLibrary()
+        public void Initialize()
         {
             _stream.Seek(2, SeekOrigin.Begin);
             var version = System.Text.Encoding.UTF8.GetString(_reader.ReadBytes(20)).TrimEnd('\0');

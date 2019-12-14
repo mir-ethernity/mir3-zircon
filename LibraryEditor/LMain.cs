@@ -40,6 +40,7 @@ namespace LibraryEditor
             {
                 OpenLibraryDialog.FileName = Program.openFileWith;
                 _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
+                _library.Initialize();
                 _libraryPath = OpenLibraryDialog.FileName;
                 PreviewListView.VirtualListSize = _library.Count;
 
@@ -273,6 +274,7 @@ namespace LibraryEditor
 
             if (_library != null) _library.Dispose();
             _library = new ZirconImageLibraryEditor(SaveLibraryDialog.FileName);
+            _library.Initialize();
             _libraryPath = SaveLibraryDialog.FileName;
 
             PreviewListView.VirtualListSize = 0;
@@ -291,6 +293,7 @@ namespace LibraryEditor
 
             if (_library != null) _library.Dispose();
             _library = new ZirconImageLibraryEditor(OpenLibraryDialog.FileName);
+            _library.Initialize();
             _libraryPath = OpenLibraryDialog.FileName;
             PreviewListView.VirtualListSize = _library.Count;
 
@@ -356,6 +359,8 @@ namespace LibraryEditor
         private void ConvertLibrary(string path, IImageLibrary source)
         {
             var newPath = Path.ChangeExtension(path, ".Zl");
+            source.Initialize();
+
             using (source)
             using (var library = ImageLibraryConverter.Convert<ZirconImageLibraryEditor>(source))
             using (var fs = new FileStream(newPath, FileMode.Create, FileAccess.Write))
@@ -378,8 +383,7 @@ namespace LibraryEditor
                             {
                                 if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".wtl")
                                 {
-                                    WTLImageLibrary wtlLibrary = new WTLImageLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], wtlLibrary);
+                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], new WTLImageLibrary(OpenWeMadeDialog.FileNames[i]));
                                 }
                                 else if (Path.GetExtension(OpenWeMadeDialog.FileNames[i]) == ".Lib")
                                 {
@@ -403,8 +407,7 @@ namespace LibraryEditor
                                 }
                                 else
                                 {
-                                    WemadeImageLibrary WILlib = new WemadeImageLibrary(OpenWeMadeDialog.FileNames[i]);
-                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], WILlib);
+                                    ConvertLibrary(OpenWeMadeDialog.FileNames[i], new WemadeImageLibrary(OpenWeMadeDialog.FileNames[i]));
                                 }
                                 toolStripProgressBar.Value++;
                             });
