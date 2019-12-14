@@ -132,7 +132,7 @@ namespace Mir.ImageLibrary.Zircon
                     var overlayImageLength = GetImageLength(br, overlayWidth, overlayHeight);
 
 
-                    image = new ZirconImage(offset, imageLength, width, height, offsetX, offsetX, ModificatorType.None, dataType, _reader);
+                    image = new ZirconImage(offset, imageLength, width, height, offsetX, offsetY, ModificatorType.None, dataType, _reader);
 
                     offset += imageLength;
 
