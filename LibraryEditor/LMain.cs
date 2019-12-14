@@ -117,7 +117,7 @@ namespace LibraryEditor
                 g.Clear(Color.Transparent);
                 int w = Math.Min((int)Width, 64);
                 int h = Math.Min((int)Height, 64);
-                g.DrawImage(bitmap, new Rectangle((64 - w) / 2, (64 - h) / 2, w, h), new Rectangle(0, 0, Width, Height), GraphicsUnit.Pixel);
+                g.DrawImage(bitmap, new Rectangle((64 - w) / 2, (64 - h) / 2, w, h), new Rectangle(0, 0, image.Width, image.Height), GraphicsUnit.Pixel);
 
                 g.Save();
             }

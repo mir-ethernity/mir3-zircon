@@ -318,6 +318,7 @@ namespace Mir.ImageLibrary.Wemade
             int e = w * h / 2;
 
             ImageDataType type;
+
             switch (textureType)
             {
                 case 0:
@@ -325,6 +326,8 @@ namespace Mir.ImageLibrary.Wemade
                     type = ImageDataType.Dxt1;
                     break;
                 case 3:
+                    type = ImageDataType.Dxt3;
+                    break;
                 case 5:
                     type = ImageDataType.Dxt5;
                     break;
@@ -335,7 +338,7 @@ namespace Mir.ImageLibrary.Wemade
 
             var decompressedBuffer = Ionic.Zlib.DeflateStream.UncompressBuffer(buffer);
 
-            var bitmapData = BitmapConverter.ConvertTextureToBitmap(type, w, outputHeight, decompressedBuffer);
+            var bitmapData = BitmapConverter.ConvertTextureToBitmap(type, w, h, decompressedBuffer);
             var newBuffer = new byte[outputWidth * outputHeight * 4];
 
             var sourceRowSize = w * 4;
@@ -351,12 +354,10 @@ namespace Mir.ImageLibrary.Wemade
                 Array.Copy(bitmapData, sourceStartOffset, newBuffer, destStartOffset, dataLength);
             }
 
-            dataType = ImageDataType.RGBA;
-            return newBuffer;
 
             // reconvert without black area
-            //dataType = type;
-            //return BitmapConverter.ConvertBitmapToTexture(dataType, outputWidth, outputHeight, newBuffer);
+            dataType = type;
+            return BitmapConverter.ConvertBitmapToTexture(dataType, outputWidth, outputHeight, newBuffer);
         }
 
 

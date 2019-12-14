@@ -21,12 +21,12 @@ namespace Mir.ImageLibrary.Converter.BitmapConverters
             }
 
             var bitmap = new Epsylon.TextureSquish.Bitmap(fixedColors, width, height);
-            return bitmap.Compress(Epsylon.TextureSquish.CompressionMode.Dxt1, Epsylon.TextureSquish.CompressionOptions.None);
+            return bitmap.Compress(Epsylon.TextureSquish.CompressionMode.Dxt3, Epsylon.TextureSquish.CompressionOptions.None);
         }
 
         public byte[] ConvertTextureToBitmap(int width, int height, byte[] buffer)
         {
-            var pixels = Epsylon.TextureSquish.Bitmap.Decompress(width, height, buffer, Epsylon.TextureSquish.CompressionMode.Dxt1).Data;
+            var pixels = Epsylon.TextureSquish.Bitmap.Decompress(width, height, buffer, Epsylon.TextureSquish.CompressionMode.Dxt3).Data;
 
             for (int i = 0; i < pixels.Length; i += 4)
             {
