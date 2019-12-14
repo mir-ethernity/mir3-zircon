@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Library;
+using Mir.ImageLibrary;
+using Mir.ImageLibrary.Zircon;
 using SlimDX;
 using SlimDX.Direct3D9;
 
@@ -17,9 +19,10 @@ namespace Client.Envir
         public readonly object LoadLocker = new object();
 
         public string FileName;
+        private IImageLibrary _imageLibrary;
 
-        private FileStream _FStream;
-        private BinaryReader _BReader;
+        //private FileStream _FStream;
+        //private BinaryReader _BReader;
 
         public bool Loaded, Loading;
 
@@ -27,8 +30,10 @@ namespace Client.Envir
 
         public MirLibrary(string fileName)
         {
-            _FStream = File.OpenRead(fileName);
-            _BReader = new BinaryReader(_FStream);
+            FileName = fileName;
+            _imageLibrary = new ZirconImageLibrary(fileName);
+            //_FStream = File.OpenRead(fileName);
+            //_BReader = new BinaryReader(_FStream);
         }
         public void ReadLibrary()
         {
@@ -38,25 +43,28 @@ namespace Client.Envir
                 Loading = true;
             }
 
-            if (_BReader == null)
-            {
-                Loaded = true;
-                return;
-            }
+            Images = new MirImage[_imageLibrary.Count];
+            for (var i = 0; i < _imageLibrary.Count; i++)
+                Images[i] = _imageLibrary[i] != null ? new MirImage(_imageLibrary[i]) : null;
 
-            using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
-            using (BinaryReader reader = new BinaryReader(mstream))
-            {
-                Images = new MirImage[reader.ReadInt32()];
+            //if (_BReader == null)
+            //{
+            //    Loaded = true;
+            //    return;
+            //}
 
-                for (int i = 0; i < Images.Length; i++)
-                {
-                    if (!reader.ReadBoolean()) continue;
+            //using (MemoryStream mstream = new MemoryStream(_BReader.ReadBytes(_BReader.ReadInt32())))
+            //using (BinaryReader reader = new BinaryReader(mstream))
+            //{
+            //    Images = new MirImage[reader.ReadInt32()];
 
-                    Images[i] = new MirImage(reader);
-                }
-            }
+            //    for (int i = 0; i < Images.Length; i++)
+            //    {
+            //        if (!reader.ReadBoolean()) continue;
 
+            //        Images[i] = new MirImage(reader);
+            //    }
+            //}
 
             Loaded = true;
         }
@@ -91,15 +99,15 @@ namespace Client.Envir
             switch (type)
             {
                 case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
+                    if (!image.ImageValid) image.CreateImage();
                     texture = image.Image;
                     break;
                 case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
+                    if (!image.ShadowValid) image.CreateShadow();
                     texture = image.Shadow;
                     break;
                 case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
+                    if (!image.OverlayValid) image.CreateOverlay();
                     texture = image.Overlay;
                     break;
                 default:
@@ -145,16 +153,16 @@ namespace Client.Envir
             switch (type)
             {
                 case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
+                    if (!image.ImageValid) image.CreateImage();
                     texture = image.Image;
                     break;
                 case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
+                    if (!image.ShadowValid) image.CreateShadow();
                     texture = image.Shadow;
 
                     if (texture == null)
                     {
-                        if (!image.ImageValid) image.CreateImage(_BReader);
+                        if (!image.ImageValid) image.CreateImage();
                         texture = image.Image;
 
                         switch (image.ShadowType)
@@ -165,7 +173,7 @@ namespace Client.Envir
                                 Matrix m = Matrix.Scaling(1F, 0.5f, 0);
 
                                 m.M21 = -0.50F;
-                                DXManager.Sprite.Transform = m*Matrix.Translation(x + image.Height/2, y, 0);
+                                DXManager.Sprite.Transform = m * Matrix.Translation(x + image.Height / 2, y, 0);
 
                                 DXManager.Device.SetSamplerState(0, SamplerState.MinFilter, TextureFilter.None);
                                 if (oldOpacity != 0.5F) DXManager.SetOpacity(0.5F);
@@ -196,7 +204,7 @@ namespace Client.Envir
                     }
                     break;
                 case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
+                    if (!image.OverlayValid) image.CreateOverlay();
                     texture = image.Overlay;
                     break;
                 default:
@@ -218,14 +226,14 @@ namespace Client.Envir
             if (!CheckImage(index)) return;
 
             MirImage image = Images[index];
-            
+
             Texture texture;
 
             float oldOpacity = DXManager.Opacity;
             switch (type)
             {
                 case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
+                    if (!image.ImageValid) image.CreateImage();
                     texture = image.Image;
                     if (useOffSet)
                     {
@@ -234,7 +242,7 @@ namespace Client.Envir
                     }
                     break;
                 case ImageType.Shadow:
-                    if (!image.ShadowValid) image.CreateShadow(_BReader);
+                    if (!image.ShadowValid) image.CreateShadow();
                     texture = image.Shadow;
 
                     if (useOffSet)
@@ -246,7 +254,7 @@ namespace Client.Envir
 
                     if (texture == null)
                     {
-                        if (!image.ImageValid) image.CreateImage(_BReader);
+                        if (!image.ImageValid) image.CreateImage();
                         texture = image.Image;
 
                         switch (image.ShadowType)
@@ -289,7 +297,7 @@ namespace Client.Envir
 
                     break;
                 case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
+                    if (!image.OverlayValid) image.CreateOverlay();
                     texture = image.Overlay;
 
                     if (useOffSet)
@@ -305,10 +313,10 @@ namespace Client.Envir
             if (texture == null) return;
 
             DXManager.SetOpacity(opacity);
-            
+
             DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
             CEnvir.DPSCounter++;
-            
+
             DXManager.SetOpacity(oldOpacity);
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
@@ -324,7 +332,7 @@ namespace Client.Envir
             switch (type)
             {
                 case ImageType.Image:
-                    if (!image.ImageValid) image.CreateImage(_BReader);
+                    if (!image.ImageValid) image.CreateImage();
                     texture = image.Image;
                     if (useOffSet)
                     {
@@ -334,17 +342,17 @@ namespace Client.Envir
                     break;
                 case ImageType.Shadow:
                     return;
-               /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
-                    texture = image.Shadow;
+                /*     if (!image.ShadowValid) image.CreateShadow(_BReader);
+                     texture = image.Shadow;
 
-                    if (useOffSet)
-                    {
-                        x += image.ShadowOffSetX;
-                        y += image.ShadowOffSetY;
-                    }
-                    break;*/
+                     if (useOffSet)
+                     {
+                         x += image.ShadowOffSetX;
+                         y += image.ShadowOffSetY;
+                     }
+                     break;*/
                 case ImageType.Overlay:
-                    if (!image.OverlayValid) image.CreateOverlay(_BReader);
+                    if (!image.OverlayValid) image.CreateOverlay();
                     texture = image.Overlay;
 
                     if (useOffSet)
@@ -363,7 +371,7 @@ namespace Client.Envir
             float oldRate = DXManager.BlendRate;
 
             DXManager.SetBlend(true, rate);
-            
+
             DXManager.Sprite.Draw(texture, Vector3.Zero, new Vector3(x, y, 0), colour);
             CEnvir.DPSCounter++;
 
@@ -371,7 +379,7 @@ namespace Client.Envir
 
             image.ExpireTime = Time.Now + Config.CacheDuration;
         }
-        
+
 
         #region IDisposable Support
 
@@ -389,12 +397,12 @@ namespace Client.Envir
 
                 Images = null;
 
+                _imageLibrary.Dispose();
+                //_FStream?.Dispose();
+                //_FStream = null;
 
-                _FStream?.Dispose();
-                _FStream = null;
-
-                _BReader?.Dispose();
-                _BReader = null;
+                //_BReader?.Dispose();
+                //_BReader = null;
 
                 Loading = false;
                 Loaded = false;
@@ -419,7 +427,7 @@ namespace Client.Envir
 
     public sealed class MirImage : IDisposable
     {
-        public int Position;
+        // public int Position;
 
         #region Texture
 
@@ -431,16 +439,16 @@ namespace Client.Envir
         public Texture Image;
         public bool ImageValid { get; private set; }
         public unsafe byte* ImageData;
-        public int ImageDataSize
-        {
-            get
-            {
-                int w = Width + (4 - Width % 4) % 4;
-                int h = Height + (4 - Height % 4) % 4;
+        //public int ImageDataSize
+        //{
+        //    get
+        //    {
+        //        int w = Width + (4 - Width % 4) % 4;
+        //        int h = Height + (4 - Height % 4) % 4;
 
-                return w * h / 2;
-            }
-        }
+        //        return w * h / 2;
+        //    }
+        //}
         #endregion
 
         #region Shadow
@@ -486,32 +494,61 @@ namespace Client.Envir
 
 
         public DateTime ExpireTime;
+        private readonly IDictionary<Mir.ImageLibrary.ImageType, IImage> _images;
 
-        public MirImage(BinaryReader reader)
+        //public MirImage(BinaryReader reader)
+        //{
+        //    Position = reader.ReadInt32();
+
+        //    Width = reader.ReadInt16();
+        //    Height = reader.ReadInt16();
+        //    OffSetX = reader.ReadInt16();
+        //    OffSetY = reader.ReadInt16();
+
+        //    ShadowType = reader.ReadByte();
+        //    ShadowWidth = reader.ReadInt16();
+        //    ShadowHeight = reader.ReadInt16();
+        //    ShadowOffSetX = reader.ReadInt16();
+        //    ShadowOffSetY = reader.ReadInt16();
+
+        //    OverlayWidth = reader.ReadInt16();
+        //    OverlayHeight = reader.ReadInt16();
+        //}
+
+        public MirImage(IDictionary<Mir.ImageLibrary.ImageType, IImage> images)
         {
-            Position = reader.ReadInt32();
+            _images = images;
+            foreach (var img in images)
+            {
+                if (img.Value == null) continue;
 
-            Width = reader.ReadInt16();
-            Height = reader.ReadInt16();
-            OffSetX = reader.ReadInt16();
-            OffSetY = reader.ReadInt16();
-
-            ShadowType = reader.ReadByte();
-            ShadowWidth = reader.ReadInt16();
-            ShadowHeight = reader.ReadInt16();
-            ShadowOffSetX = reader.ReadInt16();
-            ShadowOffSetY = reader.ReadInt16();
-
-            OverlayWidth = reader.ReadInt16();
-            OverlayHeight = reader.ReadInt16();
-
-
+                switch (img.Key)
+                {
+                    case Mir.ImageLibrary.ImageType.Image:
+                        Width = (short)img.Value.Width;
+                        Height = (short)img.Value.Height;
+                        OffSetX = img.Value.OffsetX;
+                        OffSetY = img.Value.OffsetY;
+                        break;
+                    case Mir.ImageLibrary.ImageType.Shadow:
+                        ShadowType = (byte)(img.Value.Modificator == ModificatorType.None ? 0 : (img.Value.Modificator == ModificatorType.Opacity ? 50 : 49));
+                        ShadowWidth = (short)img.Value.Width;
+                        ShadowHeight = (short)img.Value.Height;
+                        ShadowOffSetX = img.Value.OffsetX;
+                        ShadowOffSetY = img.Value.OffsetY;
+                        break;
+                    case Mir.ImageLibrary.ImageType.Overlay:
+                        OverlayWidth = (short)img.Value.Width;
+                        OverlayHeight = (short)img.Value.Height;
+                        break;
+                }
+            }
         }
 
         public unsafe bool VisiblePixel(Point p, bool acurrate)
         {
             if (p.X < 0 || p.Y < 0 || !ImageValid || ImageData == null) return false;
-            
+
             int w = Width + (4 - Width % 4) % 4;
             int h = Height + (4 - Height % 4) % 4;
 
@@ -531,7 +568,7 @@ namespace Client.Envir
             x = p.X % 4;
             y = p.Y % 4;
             x *= 2;
-            
+
             return (ImageData[index + 4 + y] & 1 << x) >> x != 1 || (ImageData[index + 4 + y] & 1 << x + 1) >> x + 1 != 1;
         }
 
@@ -558,15 +595,15 @@ namespace Client.Envir
             ImageValid = false;
             ShadowValid = false;
             OverlayValid = false;
-            
+
             ExpireTime = DateTime.MinValue;
 
             DXManager.TextureList.Remove(this);
         }
 
-        public unsafe void CreateImage(BinaryReader reader)
+        public unsafe void CreateImage()
         {
-            if (Position == 0) return;
+            if (!_images.ContainsKey(Mir.ImageLibrary.ImageType.Image)) return;
 
             int w = Width + (4 - Width % 4) % 4;
             int h = Height + (4 - Height % 4) % 4;
@@ -577,11 +614,8 @@ namespace Client.Envir
             DataRectangle rect = Image.LockRectangle(0, LockFlags.Discard);
             ImageData = (byte*)rect.Data.DataPointer;
 
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ImageDataSize), 0, ImageDataSize);
-            }
+            var data = _images[Mir.ImageLibrary.ImageType.Image].GetBuffer();
+            rect.Data.Write(data, 0, data.Length);
 
             Image.UnlockRectangle(0);
             rect.Data.Dispose();
@@ -590,12 +624,10 @@ namespace Client.Envir
             ExpireTime = CEnvir.Now + Config.CacheDuration;
             DXManager.TextureList.Add(this);
         }
-        public unsafe void CreateShadow(BinaryReader reader)
+        public unsafe void CreateShadow()
         {
-            if (Position == 0) return;
-
             if (!ImageValid)
-                CreateImage(reader);
+                CreateImage();
 
             int w = ShadowWidth + (4 - ShadowWidth % 4) % 4;
             int h = ShadowHeight + (4 - ShadowHeight % 4) % 4;
@@ -606,23 +638,18 @@ namespace Client.Envir
             DataRectangle rect = Shadow.LockRectangle(0, LockFlags.Discard);
             ShadowData = (byte*)rect.Data.DataPointer;
 
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position + ImageDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(ShadowDataSize), 0, ShadowDataSize);
-            }
+            var data = _images[Mir.ImageLibrary.ImageType.Shadow].GetBuffer();
+            rect.Data.Write(data, 0, data.Length);
 
             Shadow.UnlockRectangle(0);
             rect.Data.Dispose();
 
             ShadowValid = true;
         }
-        public unsafe void CreateOverlay(BinaryReader reader)
+        public unsafe void CreateOverlay()
         {
-            if (Position == 0) return;
-
             if (!ImageValid)
-                CreateImage(reader);
+                CreateImage();
 
             int w = OverlayWidth + (4 - OverlayWidth % 4) % 4;
             int h = OverlayHeight + (4 - OverlayHeight % 4) % 4;
@@ -633,11 +660,8 @@ namespace Client.Envir
             DataRectangle rect = Overlay.LockRectangle(0, LockFlags.Discard);
             OverlayData = (byte*)rect.Data.DataPointer;
 
-            lock (reader)
-            {
-                reader.BaseStream.Seek(Position + ImageDataSize + ShadowDataSize, SeekOrigin.Begin);
-                rect.Data.Write(reader.ReadBytes(OverlayDataSize), 0, OverlayDataSize);
-            }
+            var data = _images[Mir.ImageLibrary.ImageType.Overlay].GetBuffer();
+            rect.Data.Write(data, 0, data.Length);
 
             Overlay.UnlockRectangle(0);
             rect.Data.Dispose();
@@ -655,8 +679,6 @@ namespace Client.Envir
             if (disposing)
             {
                 IsDisposed = true;
-
-                Position = 0;
 
                 Width = 0;
                 Height = 0;

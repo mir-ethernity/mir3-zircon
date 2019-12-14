@@ -160,7 +160,7 @@ namespace Mir.ImageLibrary.Zircon
                     if (shadow != null)
                         _images[i].Add(ImageType.Shadow, shadow);
 
-                    if (shadow != null)
+                    if (overlay != null)
                         _images[i].Add(ImageType.Overlay, overlay);
                 }
             }
