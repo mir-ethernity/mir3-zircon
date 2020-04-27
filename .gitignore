@@ -5,7 +5,6 @@
 /Build/LibraryEditor
 
 /packages/Ionic.Zlib.1.9.1.5
-*.csproj
 Components/SlimDX.dll
 PatchManager/PatchManager.csproj
 .vs/

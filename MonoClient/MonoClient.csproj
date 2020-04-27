@@ -1,0 +1,211 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{75F50C16-9A29-4985-865D-6561AA6108F0}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MonoClient</RootNamespace>
+    <AssemblyName>MonoClient</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MonoGamePlatform>DesktopGL</MonoGamePlatform>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <DefineConstants>TRACE;LINUX</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <Prefer32Bit>false</Prefer32Bit>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Controls\DXAnimatedControl.cs" />
+    <Compile Include="Controls\DXButton.cs" />
+    <Compile Include="Controls\DXCheckBox.cs" />
+    <Compile Include="Controls\DXColourControl.cs" />
+    <Compile Include="Controls\DXComboBox.cs" />
+    <Compile Include="Controls\DXConfigWindow.cs" />
+    <Compile Include="Controls\DXControl.cs" />
+    <Compile Include="Controls\DXImageControl.cs" />
+    <Compile Include="Controls\DXInputWindow.cs" />
+    <Compile Include="Controls\DXItemAmountWindow.cs" />
+    <Compile Include="Controls\DXItemCell.cs" />
+    <Compile Include="Controls\DXItemGrid.cs" />
+    <Compile Include="Controls\DXKeyBindWindow.cs" />
+    <Compile Include="Controls\DXLabel.cs" />
+    <Compile Include="Controls\DXListBox.cs" />
+    <Compile Include="Controls\DXMessageBox.cs" />
+    <Compile Include="Controls\DXNumberBox.cs" />
+    <Compile Include="Controls\DXNumberTextBox.cs" />
+    <Compile Include="Controls\DXScene.cs" />
+    <Compile Include="Controls\DXTabControl.cs" />
+    <Compile Include="Controls\DXTextBox.cs" />
+    <Compile Include="Controls\DXVScrollBar.cs" />
+    <Compile Include="Controls\DXWindow.cs" />
+    <Compile Include="Envir\CConnection.cs" />
+    <Compile Include="Envir\CEnvir.cs" />
+    <Compile Include="Envir\Config.cs" />
+    <Compile Include="Envir\DXManager.cs" />
+    <Compile Include="Envir\DXSound.cs" />
+    <Compile Include="Envir\DXSoundManager.cs" />
+    <Compile Include="Envir\Translations\ChineseMessages.cs" />
+    <Compile Include="Envir\Translations\EnglishMessages.cs" />
+    <Compile Include="Envir\Translations\StringMessages.cs" />
+    <Compile Include="MirGame.cs" />
+    <Compile Include="Models\DamageInfo.cs" />
+    <Compile Include="Models\ItemObject.cs" />
+    <Compile Include="Models\MapObject.cs" />
+    <Compile Include="Models\MirEffect.cs" />
+    <Compile Include="Models\MirLibrary.cs" />
+    <Compile Include="Models\MirProjectile.cs" />
+    <Compile Include="Models\MonsterObject.cs" />
+    <Compile Include="Models\NPCObject.cs" />
+    <Compile Include="Models\ObjectAction.cs" />
+    <Compile Include="Models\PlayerObject.cs" />
+    <Compile Include="Models\SpellObject.cs" />
+    <Compile Include="Models\UserObject.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scenes\GameScene.cs" />
+    <Compile Include="Scenes\LoginScene.cs" />
+    <Compile Include="Scenes\SelectScene.cs" />
+    <Compile Include="Scenes\Views\AutoPotionDialog.cs" />
+    <Compile Include="Scenes\Views\BeltDialog.cs" />
+    <Compile Include="Scenes\Views\BigMapDialog.cs" />
+    <Compile Include="Scenes\Views\BlockDialog.cs" />
+    <Compile Include="Scenes\Views\BuffDialog.cs" />
+    <Compile Include="Scenes\Views\CharacterDialog.cs" />
+    <Compile Include="Scenes\Views\ChatOptionsDialog.cs" />
+    <Compile Include="Scenes\Views\ChatTab.cs" />
+    <Compile Include="Scenes\Views\ChatTextBox.cs" />
+    <Compile Include="Scenes\Views\CompanionDialog.cs" />
+    <Compile Include="Scenes\Views\EditCharacterDialog.cs" />
+    <Compile Include="Scenes\Views\ExitDialog.cs" />
+    <Compile Include="Scenes\Views\FortuneCheckerDialog.cs" />
+    <Compile Include="Scenes\Views\GroupDialog.cs" />
+    <Compile Include="Scenes\Views\GuildDialog.cs" />
+    <Compile Include="Scenes\Views\InspectDialog.cs" />
+    <Compile Include="Scenes\Views\InventoryDialog.cs" />
+    <Compile Include="Scenes\Views\MagicBarDialog.cs" />
+    <Compile Include="Scenes\Views\MagicDialog.cs" />
+    <Compile Include="Scenes\Views\MailDialog.cs" />
+    <Compile Include="Scenes\Views\MainPanel.cs" />
+    <Compile Include="Scenes\Views\MapControl.cs" />
+    <Compile Include="Scenes\Views\MarketPlaceDialog.cs" />
+    <Compile Include="Scenes\Views\MiniMapDialog.cs" />
+    <Compile Include="Scenes\Views\MonsterDialog.cs" />
+    <Compile Include="Scenes\Views\NPCDialog.cs" />
+    <Compile Include="Scenes\Views\QuestDialog.cs" />
+    <Compile Include="Scenes\Views\QuestTrackerDialog.cs" />
+    <Compile Include="Scenes\Views\RankingDialog.cs" />
+    <Compile Include="Scenes\Views\StorageDialog.cs" />
+    <Compile Include="Scenes\Views\TradeDialog.cs" />
+    <Compile Include="UserModels\ChatTabControlSetting.cs" />
+    <Compile Include="UserModels\ChatTabPageSetting.cs" />
+    <Compile Include="UserModels\KeyBindInfo.cs" />
+    <Compile Include="UserModels\WindowSetting.cs" />
+    <Compile Include="XExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x86\SDL2.dll">
+      <Link>x86\SDL2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x64\SDL2.dll">
+      <Link>x64\SDL2.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x86\soft_oal.dll">
+      <Link>x86\soft_oal.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x64\soft_oal.dll">
+      <Link>x64\soft_oal.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x86\libSDL2-2.0.so.0">
+      <Link>x86\libSDL2-2.0.so.0</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x64\libSDL2-2.0.so.0">
+      <Link>x64\libSDL2-2.0.so.0</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x86\libopenal.so.1">
+      <Link>x86\libopenal.so.1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\x64\libopenal.so.1">
+      <Link>x64\libopenal.so.1</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\libSDL2-2.0.0.dylib">
+      <Link>libSDL2-2.0.0.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\libopenal.1.dylib">
+      <Link>libopenal.1.dylib</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll.config">
+      <Link>MonoGame.Framework.dll.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonoLibrary\MonoLibrary.csproj">
+      <Project>{130ebfeb-4a1f-4252-97c1-bd9f4050f9e7}</Project>
+      <Name>MonoLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

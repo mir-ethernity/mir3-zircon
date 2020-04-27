@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Mir.ImageLibrary.Converter\Mir.ImageLibrary.Converter.csproj" />
+    <ProjectReference Include="..\Mir.ImageLibrary.Zircon\Mir.ImageLibrary.Zircon.csproj" />
+  </ItemGroup>
+
+</Project>
