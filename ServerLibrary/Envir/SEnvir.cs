@@ -212,7 +212,7 @@ namespace Server.Envir
 
         #endregion
 
-    
+
 
         public static bool Started { get; set; }
         public static bool NetworkStarted { get; set; }
@@ -226,7 +226,7 @@ namespace Server.Envir
         public static long DBytesSent, DBytesReceived;
         public static long TotalBytesSent, TotalBytesReceived;
         public static long DownloadSpeed, UploadSpeed;
-        
+
 
         public static bool ServerBuffChanged;
 
@@ -333,7 +333,7 @@ namespace Server.Envir
             EnvirThread = new Thread(() => EnvirLoop()) { IsBackground = true };
             EnvirThread.Start();
 
-            
+
         }
 
         public static void LoadExperienceList()
@@ -823,7 +823,9 @@ namespace Server.Envir
             StartEnvir();
             StartNetwork();
 
-            ApiServer.Instance.Start();
+            if (Config.ApiServerEnabled)
+                ApiServer.Instance.Start();
+
             WebServer.StartWebServer();
 
             Started = NetworkStarted;
@@ -1206,7 +1208,7 @@ namespace Server.Envir
             Session.Save(false);
 
             WebServer.Save();
-            
+
             Thread saveThread = new Thread(CommitChanges) { IsBackground = true };
             saveThread.Start(Session);
         }
@@ -1271,7 +1273,7 @@ namespace Server.Envir
 
             lines.Clear();
         }
-       
+
         public static void CheckGuildWars()
         {
             TimeSpan change = Now - LastWarTime;
@@ -3214,7 +3216,7 @@ namespace Server.Envir
             return false;
         }
 
-      
+
 
         #region Password Encryption
         private const int Iterations = 1354;

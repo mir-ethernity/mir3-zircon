@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using Library;
+using Microsoft.Extensions.Logging;
 
 namespace Server.Envir
 {
@@ -17,7 +18,7 @@ namespace Server.Envir
         public static int MaxPacket { get; set; } = 50;
         public static TimeSpan PacketBanTime { get; set; } = TimeSpan.FromMinutes(5);
         public static string SyncRemotePreffix { get; set; } = "http://127.0.0.1:80/Command/";
-     
+
         [ConfigSection("System")]
         public static bool CheckVersion { get; set; } = true;
         public static string VersionPath { get; set; } = @".\Zircon.exe";
@@ -68,6 +69,12 @@ namespace Server.Envir
         public static string MailPassword { get; set; } = @"REDACTED";
         public static string MailFrom { get; set; } = "admin@zirconserver.com";
         public static string MailDisplayName { get; set; } = "Admin";
+
+        [ConfigSection("ApiServer")]
+        public static bool ApiServerEnabled { get; set; } = false;
+        public static string ApiServerHttpUrl { get; set; } = "http://*:8000";
+        public static string ApiServerHttpsUrl { get; set; } = "https://*:8443";
+        public static string ApiServerLogLevel { get; set; } = LogLevel.Warning.ToString();
 
         [ConfigSection("WebServer")]
         public static string WebPrefix { get; set; } = @"http://*:80/Command/";

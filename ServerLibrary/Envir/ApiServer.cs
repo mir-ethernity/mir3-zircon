@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,7 +26,7 @@ namespace Server.Envir
 
         public void Stop()
         {
-            _thread.Abort();
+            _thread?.Abort();
             _thread = null;
             _host = null;
         }
@@ -34,7 +35,12 @@ namespace Server.Envir
         {
             _host = WebHost.CreateDefaultBuilder()
              .UseStartup<ApiServerStartup>()
-             .UseUrls("http://*:8000", "https://*:8443")
+             .UseUrls(Config.ApiServerHttpUrl, Config.ApiServerHttpsUrl)
+             .ConfigureLogging((context, logging) =>
+             {
+                 logging.ClearProviders();
+                 logging.AddProvider(new ApiServerLoggerProvider());
+             })
              .Build();
 
             _host.Start();
