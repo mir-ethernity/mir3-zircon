@@ -75,6 +75,9 @@ namespace Server.Envir
         public static string ApiServerHttpUrl { get; set; } = "http://*:8000";
         public static string ApiServerHttpsUrl { get; set; } = "https://*:8443";
         public static string ApiServerLogLevel { get; set; } = LogLevel.Warning.ToString();
+        public static bool ApiServerRateEnabled { get; set; } = true;
+        public static int ApiServerRateLimit { get; set; } = 30;
+        public static string ApiServerRatePeriod { get; set; } = "1m";
 
         [ConfigSection("WebServer")]
         public static string WebPrefix { get; set; } = @"http://*:80/Command/";

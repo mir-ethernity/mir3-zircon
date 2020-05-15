@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using AspNetCoreRateLimit;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +20,21 @@ namespace Server.Envir
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (Config.ApiServerRateEnabled)
+            {
+                services.Configure<IpRateLimitOptions>(options =>
+                {
+                    options.EnableEndpointRateLimiting = true;
+                    options.StackBlockedRequests = false;
+                    options.GeneralRules.Add(new RateLimitRule
+                    {
+                        Endpoint = "*",
+                        Limit = Config.ApiServerRateLimit,
+                        Period = Config.ApiServerRatePeriod
+                    });
+                });
+            }
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
