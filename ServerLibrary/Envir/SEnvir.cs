@@ -50,7 +50,7 @@ namespace Server.Envir
 
         public static void Log(string log, bool hardLog = true)
         {
-            log = string.Format("[{0:F}]: {1}", Time.Now, log);
+            log = string.Format("[{0}]: {1}", Time.Now.ToString("HH:mm"), log);
 
             if (UseLogConsole)
             {
@@ -332,6 +332,8 @@ namespace Server.Envir
 
             EnvirThread = new Thread(() => EnvirLoop()) { IsBackground = true };
             EnvirThread.Start();
+
+            
         }
 
         public static void LoadExperienceList()
@@ -821,6 +823,7 @@ namespace Server.Envir
             StartEnvir();
             StartNetwork();
 
+            ApiServer.Instance.Start();
             WebServer.StartWebServer();
 
             Started = NetworkStarted;
@@ -1031,6 +1034,7 @@ namespace Server.Envir
                 }
             }
 
+            ApiServer.Instance.Stop();
             WebServer.StopWebServer();
             StopNetwork();
 
