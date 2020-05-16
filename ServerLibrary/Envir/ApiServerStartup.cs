@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Server.Services;
+using Server.Services.Default;
 
 namespace Server.Envir
 {
@@ -24,8 +27,6 @@ namespace Server.Envir
             {
                 services.Configure<IpRateLimitOptions>(options =>
                 {
-                    options.EnableEndpointRateLimiting = true;
-                    options.StackBlockedRequests = false;
                     options.GeneralRules.Add(new RateLimitRule
                     {
                         Endpoint = "*",
@@ -34,6 +35,8 @@ namespace Server.Envir
                     });
                 });
             }
+
+            services.AddTransient<IAccountService, AccountService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

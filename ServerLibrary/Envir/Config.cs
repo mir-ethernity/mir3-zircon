@@ -78,6 +78,7 @@ namespace Server.Envir
         public static bool ApiServerRateEnabled { get; set; } = true;
         public static int ApiServerRateLimit { get; set; } = 30;
         public static string ApiServerRatePeriod { get; set; } = "1m";
+        public static string ApiServerJWTSecret { get; set; } = "REDACTED";
 
         [ConfigSection("WebServer")]
         public static string WebPrefix { get; set; } = @"http://*:80/Command/";

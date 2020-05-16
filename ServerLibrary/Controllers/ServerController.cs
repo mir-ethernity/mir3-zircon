@@ -10,16 +10,16 @@ namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ServerController
+    public class ServerController : ControllerBase
     {
         [HttpGet("status")]
-        public ServerStatus GetStatus()
+        public IActionResult GetStatus()
         {
-            return new ServerStatus
+            return Ok(new ServerStatus
             {
                 Online = SEnvir.Started,
                 Players = SEnvir.Players.Count
-            };
+            });
         }
     }
 }

@@ -3243,7 +3243,7 @@ namespace Server.Envir
                 }
             }
         }
-        private static bool PasswordMatch(string password, byte[] totalHash)
+        public static bool PasswordMatch(string password, byte[] totalHash)
         {
             byte[] salt = new byte[SaltSize];
             Buffer.BlockCopy(totalHash, 0, salt, 0, SaltSize);

@@ -1,0 +1,53 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.9.14",
+    "@material-ui/icons": "^4.9.1",
+    "@sentry/browser": "^5.15.5",
+    "aurelia-dependency-injection": "^1.5.2",
+    "axios": "^0.19.2",
+    "i18next": "^19.4.4",
+    "notistack": "^0.9.14",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-i18next": "^11.4.0",
+    "react-router-dom": "^5.2.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-router": "^5.1.7",
+    "@types/react-router-dom": "^5.1.5",
+    "cross-env": "^5.2.0",
+    "node-sass": "^4.14.1",
+    "react-scripts": "^3.4.0",
+    "tslint": "^6.1.2",
+    "typescript": "^3.7.5"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "cross-env CI=true react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint": "node ./node_modules/tslint/bin/tslint -p tsconfig.json  -c tslint.json"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

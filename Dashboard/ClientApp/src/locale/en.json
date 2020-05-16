@@ -1,0 +1,14 @@
+{
+    "translation": {
+        "account": {
+            "sign_in": "Sign In",
+            "login": "Login",
+            "remember_me": "Remember me",
+            "email": "Email",
+            "password": "Password"
+        },
+        "axios": {
+            "network_error": "The connection to the server could not be established."
+        }
+    }
+}
