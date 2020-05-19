@@ -30,10 +30,9 @@ namespace MapEditor.Interface
         public void LoadMap(string filePath)
         {
             using (var fs = File.OpenRead(filePath))
-               Environment.MapActive = Environment.MapReader.Read(fs);
+                Environment.MapActive = Environment.MapReader.Read(fs);
 
-            Environment.MapX = (Environment.MapActive.Width * Environment.CellWidth) / 2;
-            Environment.MapY = (Environment.MapActive.Height * Environment.CellHeight) / 2;
+            Environment.UpdateUserScreen((Environment.MapActive.Width * Environment.CellWidth) / 2, (Environment.MapActive.Height * Environment.CellHeight) / 2);
         }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.ImageLibrary.Zircon;
 using Mir.Ethernity.MapLibrary;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,8 +26,41 @@ namespace MapEditor
         public static GameTime Time { get; set; }
 
         public static Map MapActive { get; set; }
-        public static int MapX { get; set; }
-        public static int MapY { get; set; }
+
         public static int MapAnimation { get; set; }
+
+
+        public static int UserX { get; set; }
+        public static int UserY { get; set; }
+
+        public static int MouseX { get; set; }
+        public static int MouseY { get; set; }
+
+        public static int UserScreenX { get; set; }
+        public static int UserScreenY { get; set; }
+        public static int UserOffsetX { get; set; }
+        public static int UserOffsetY { get; set; }
+        public static bool ShowGrid { get; set; } = true;
+        public static bool ShowNoWalkGrid { get; set; }
+
+        public static void UpdateUserScreen(int x, int y)
+        {
+            UserScreenX = x;
+            UserScreenY = y;
+
+            UserX = UserScreenX / CellWidth;
+            UserY = UserScreenY / CellHeight;
+
+            UserOffsetX = UserScreenX - UserX * CellWidth;
+            UserOffsetY = UserScreenY - UserY * CellHeight;
+
+            UpdateMouseTile();
+        }
+
+        public static void UpdateMouseTile()
+        {
+            MouseX = ((Desktop.MousePosition.X + UserOffsetX) / CellWidth) + UserX - OffsetX;
+            MouseY = ((Desktop.MousePosition.Y + UserOffsetY) / CellHeight) + UserY - OffsetY;
+        }
     }
 }

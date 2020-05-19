@@ -10,6 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Environment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FontManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GraphicsManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\InterfaceLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\MapEditorControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\MapFloorLayer.cs" />
@@ -17,13 +19,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Interface\MapMiddleLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\MapPreview.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\ToolboxControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\windows\GridConfigWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LibraryManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapEditorGame.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+    <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
 </Project>

@@ -12,29 +12,33 @@ namespace MapEditor.Interface
     {
         public override void InternalRender(RenderContext batch)
         {
-            if (Environment.MapActive == null) return;
+            if (Environment.MapActive == null || !Environment.ShowGrid) return;
 
-            var mapXP = (float)Environment.MapX / Environment.CellWidth;
-            var mapYP = (float)Environment.MapY / Environment.CellHeight;
-
-            var mapX = (int)Math.Floor(mapXP);
-            var mapY = (int)Math.Floor(mapYP);
-
-            var mapXO = Environment.MapX - mapX * Environment.CellWidth;
-            var mapYO = Environment.MapY - mapY * Environment.CellHeight;
-
-            int minX = Math.Max(0, mapX - Environment.OffsetX - 4), maxX = Math.Min(Environment.MapActive.Width - 1, mapX + Environment.OffsetX + 4);
-            int minY = Math.Max(0, mapY - Environment.OffsetY - 4), maxY = Math.Min(Environment.MapActive.Height - 1, mapY + Environment.OffsetY + 25);
+            int minX = Math.Max(0, Environment.UserX - Environment.OffsetX - 4), maxX = Math.Min(Environment.MapActive.Width - 1, Environment.UserX + Environment.OffsetX + 4);
+            int minY = Math.Max(0, Environment.UserY - Environment.OffsetY - 4), maxY = Math.Min(Environment.MapActive.Height - 1, Environment.UserY + Environment.OffsetY + 25);
 
             for (int y = minY; y <= maxY; y++)
             {
-                int drawY = (y - mapY + Environment.OffsetY) * Environment.CellHeight - mapYO;
+                float drawY = (y - Environment.UserY + Environment.OffsetY) * Environment.CellHeight - Environment.UserOffsetY;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    int drawX = (x - mapX + Environment.OffsetX) * Environment.CellWidth - mapXO;
+                    float drawX = (x - Environment.UserX + Environment.OffsetX) * Environment.CellWidth - Environment.UserOffsetX;
 
-                    batch.Batch.DrawRectangle(new Rectangle(drawX, drawY, Environment.CellWidth, Environment.CellHeight), Color.White * 0.5f);
+                    var cell = Environment.MapActive.Cells.GetLength(0) > x && Environment.MapActive.Cells.GetLength(1) > y
+                        ? Environment.MapActive.Cells[x, y]
+                        : null;
+
+                    Color color = Environment.MouseX == x && Environment.MouseY == y
+                        ? Color.White
+                        : Color.White * 0.5f;
+
+                    if(Environment.ShowNoWalkGrid && cell.Flag)
+                    {
+                        batch.Batch.Draw(GraphicsManager.WhitePixel, new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), Color.Red * 0.5f);
+                    }
+
+                    batch.Batch.DrawRectangle(new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), color);
                 }
             }
         }

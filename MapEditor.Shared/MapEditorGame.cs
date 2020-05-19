@@ -44,6 +44,10 @@ namespace MapEditor
             MyraEnvironment.Game = this;
             Environment.GraphicsDevice = GraphicsDevice;
 
+            FontManager.Normal = Content.Load<SpriteFont>("fonts/normal");
+            
+            GraphicsManager.Load(GraphicsDevice);
+
             Desktop.HasExternalTextInput = true;
 
             Desktop.Root = new InterfaceLayout();
@@ -65,6 +69,7 @@ namespace MapEditor
             Environment.Time = gameTime;
 
             ProcessKeyboard();
+            Environment.UpdateMouseTile();
 
             if (_animationTime == TimeSpan.Zero)
                 _animationTime = gameTime.TotalGameTime.Add(TimeSpan.FromMilliseconds(100));
@@ -101,20 +106,25 @@ namespace MapEditor
             if (_nextIncrementSpeed == TimeSpan.Zero)
                 _nextIncrementSpeed = Environment.Time.TotalGameTime.Add(TimeSpan.FromMilliseconds(100));
 
-            if (_nextIncrementSpeed <= Environment.Time.TotalGameTime && _speedMove < 100)
+            if (_nextIncrementSpeed <= Environment.Time.TotalGameTime && _speedMove < 50)
             {
                 _nextIncrementSpeed = Environment.Time.TotalGameTime.Add(TimeSpan.FromMilliseconds(100));
                 _speedMove += 2;
             }
 
+            var x = Environment.UserScreenX;
+            var y = Environment.UserScreenY;
+
             if (pressedW)
-                Environment.MapY -= _speedMove;
+                y -= _speedMove;
             if (pressedA)
-                Environment.MapX -= _speedMove;
+                x -= _speedMove;
             if (pressedS)
-                Environment.MapY += _speedMove;
+                y += _speedMove;
             if (pressedD)
-                Environment.MapX += _speedMove;
+                x += _speedMove;
+
+            Environment.UpdateUserScreen(x, y);
         }
 
         /// <summary>

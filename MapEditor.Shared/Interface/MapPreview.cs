@@ -20,6 +20,7 @@ namespace MapEditor.Interface
         private MapGridLayer _grid;
 
         private Point _mousePosition;
+        private Label _label;
 
         public MapPreview()
         {
@@ -29,11 +30,13 @@ namespace MapEditor.Interface
             Widgets.Add(_middle = new MapMiddleLayer());
             Widgets.Add(_grid = new MapGridLayer());
 
+            Widgets.Add(_label = new Label() { TextColor = Color.White });
+
             TouchDown += MapPreview_TouchDown;
             TouchMoved += MapPreview_TouchMoved;
         }
 
-      
+
         private void MapPreview_TouchDown(object sender, EventArgs e)
         {
             _mousePosition = Desktop.TouchPosition;
@@ -43,9 +46,7 @@ namespace MapEditor.Interface
         {
             var movedPoint = Desktop.TouchPosition - _mousePosition;
             _mousePosition = Desktop.TouchPosition;
-
-            Environment.MapX -= movedPoint.X;
-            Environment.MapY -= movedPoint.Y;
+            Environment.UpdateUserScreen(Environment.UserScreenX - movedPoint.X, Environment.UserScreenY - movedPoint.Y);
         }
 
         public override void UpdateLayout()
@@ -54,6 +55,8 @@ namespace MapEditor.Interface
 
             Environment.OffsetX = Bounds.Width / 2 / Environment.CellWidth;
             Environment.OffsetY = Bounds.Height / 2 / Environment.CellHeight;
+
+            _label.Text = $"User: {Environment.UserX}:{Environment.UserY}, Mouse: {Environment.MouseX}:{Environment.MouseY}";
         }
     }
 }

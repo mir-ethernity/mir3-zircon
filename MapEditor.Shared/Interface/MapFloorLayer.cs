@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Win32;
+using Microsoft.Xna.Framework;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.MapLibrary;
 using Myra.Graphics2D.UI;
@@ -14,31 +15,22 @@ namespace MapEditor.Interface
         {
             if (Environment.MapActive == null) return;
 
-            var mapXP = (float)Environment.MapX / Environment.CellWidth;
-            var mapYP = (float)Environment.MapY / Environment.CellHeight;
-
-            var mapX = (int)Math.Floor(mapXP);
-            var mapY = (int)Math.Floor(mapYP);
-
-            var mapXO = Environment.MapX - mapX * Environment.CellWidth;
-            var mapYO = Environment.MapY - mapY * Environment.CellHeight;
-
-            int minX = Math.Max(0, mapX - Environment.OffsetX - 4), maxX = Math.Min(Environment.MapActive.Width - 1, mapX + Environment.OffsetX + 4);
-            int minY = Math.Max(0, mapY - Environment.OffsetY - 4), maxY = Math.Min(Environment.MapActive.Height - 1, mapY + Environment.OffsetY + 4);
+            int minX = Math.Max(0, Environment.UserX - Environment.OffsetX - 4), maxX = Math.Min(Environment.MapActive.Width - 1, Environment.UserX + Environment.OffsetX + 4);
+            int minY = Math.Max(0, Environment.UserY - Environment.OffsetY - 4), maxY = Math.Min(Environment.MapActive.Height - 1, Environment.UserY + Environment.OffsetY + 4);
 
             for (int y = minY; y <= maxY; y++)
             {
                 if (y < 0) continue;
                 if (y >= Environment.MapActive.Height) break;
 
-                float drawY = (y - mapY + Environment.OffsetY) * Environment.CellHeight - mapYO;
+                float drawY = (y - Environment.UserY + Environment.OffsetY) * Environment.CellHeight - Environment.UserOffsetY;
 
                 for (int x = minX; x <= maxX; x++)
                 {
                     if (x < 0) continue;
                     if (x >= Environment.MapActive.Width) break;
 
-                    float drawX = (x - mapX + Environment.OffsetX) * Environment.CellWidth - mapXO;
+                    float drawX = (x - Environment.UserX + Environment.OffsetX) * Environment.CellWidth - Environment.UserOffsetX;
 
                     MapCell tile = Environment.MapActive.Cells[x, y];
 
@@ -56,11 +48,11 @@ namespace MapEditor.Interface
 
             for (int y = minY; y <= maxY; y++)
             {
-                int drawY = (y - mapY + Environment.OffsetY + 1) * Environment.CellHeight - mapYO;
+                float drawY = (y - Environment.UserY + Environment.OffsetY + 1) * Environment.CellHeight - Environment.UserOffsetY;
 
                 for (int x = minX; x <= maxX; x++)
                 {
-                    int drawX = (x - mapX + Environment.OffsetX) * Environment.CellWidth - mapXO;
+                    float drawX = (x - Environment.UserX + Environment.OffsetX) * Environment.CellWidth - Environment.UserOffsetX;
 
                     MapCell cell = Environment.MapActive.Cells[x, y];
 
