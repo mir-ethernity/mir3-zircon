@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>7f5c3390-90ad-4fbe-9ea0-033e6ef95a3d</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>MapEditor</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Environment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\InterfaceLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapEditorControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapFloorLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapGridLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapMiddleLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapPreview.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\ToolboxControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LibraryManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MapEditorGame.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Content\" />
+  </ItemGroup>
+  <ItemGroup>
+    <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+  </ItemGroup>
+</Project>

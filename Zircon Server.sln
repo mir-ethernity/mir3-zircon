@@ -19,13 +19,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryEditor", "LibraryEdi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C951172F-95CE-41EC-861A-E8A26A13B962}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerCore", "ServerCore\ServerCore.csproj", "{2A9C1B9A-20DE-4320-A5FA-0F5B1B72B1AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\ServerCore.csproj", "{2A9C1B9A-20DE-4320-A5FA-0F5B1B72B1AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{42E44F8E-C98B-4008-958A-5C8CB3D02B8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerLibrary", "ServerLibrary\ServerLibrary.csproj", "{42E44F8E-C98B-4008-958A-5C8CB3D02B8D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryCore", "LibraryCore\LibraryCore.csproj", "{C47F32FA-4C04-4143-B4FE-623D4B014D0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibraryCore", "LibraryCore\LibraryCore.csproj", "{C47F32FA-4C04-4143-B4FE-623D4B014D0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor.Desktop", "MapEditor\MapEditor.Desktop.csproj", "{CA16F4EE-D55E-4248-97C2-7262CAAD6167}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MapEditorEngine", "MapEditorEngine", "{1003E132-6399-4CFE-911B-54270022A147}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor.Windows", "MapEditor.Windows\MapEditor.Windows.csproj", "{A9295BE0-D270-419A-A028-677020641AE3}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MapEditor.Shared", "MapEditor.Shared\MapEditor.Shared.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MapEditor.Shared\MapEditor.Shared.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
+		MapEditor.Shared\MapEditor.Shared.projitems*{a9295be0-d270-419a-a028-677020641ae3}*SharedItemsImports = 4
+		MapEditor.Shared\MapEditor.Shared.projitems*{ca16f4ee-d55e-4248-97c2-7262caad6167}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -154,6 +167,27 @@ Global
 		{C47F32FA-4C04-4143-B4FE-623D4B014D0D}.Release|x64.Build.0 = Release|Any CPU
 		{C47F32FA-4C04-4143-B4FE-623D4B014D0D}.Release|x86.ActiveCfg = Release|Any CPU
 		{C47F32FA-4C04-4143-B4FE-623D4B014D0D}.Release|x86.Build.0 = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Debug|x86.Build.0 = Debug|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|x64.Build.0 = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|x86.ActiveCfg = Release|Any CPU
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167}.Release|x86.Build.0 = Release|Any CPU
+		{A9295BE0-D270-419A-A028-677020641AE3}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Debug|Any CPU.Build.0 = Debug|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Debug|x64.ActiveCfg = Debug|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Debug|x86.ActiveCfg = Debug|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Debug|x86.Build.0 = Debug|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Release|Any CPU.ActiveCfg = Release|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x64.ActiveCfg = Release|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x86.ActiveCfg = Release|x86
+		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +196,9 @@ Global
 		{08448D7C-1B78-4C7B-819C-FC852C7C6D14} = {C951172F-95CE-41EC-861A-E8A26A13B962}
 		{AFE88EDC-61A2-429B-A338-14B3163797F9} = {C951172F-95CE-41EC-861A-E8A26A13B962}
 		{A779B96A-AE74-47E7-B0CA-A02B26C1F61E} = {C951172F-95CE-41EC-861A-E8A26A13B962}
+		{CA16F4EE-D55E-4248-97C2-7262CAAD6167} = {1003E132-6399-4CFE-911B-54270022A147}
+		{A9295BE0-D270-419A-A028-677020641AE3} = {1003E132-6399-4CFE-911B-54270022A147}
+		{A0CDBD0E-3A41-42B7-9425-A838BC2C7383} = {1003E132-6399-4CFE-911B-54270022A147}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A1E6870-A7CB-4165-960E-81486A3F1A0D}

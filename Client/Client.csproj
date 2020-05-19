@@ -47,6 +47,12 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mir.Ethernity.MapLibrary, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mir.Ethernity.MapLibrary.1.0.5\lib\netstandard2.0\Mir.Ethernity.MapLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Mir.Ethernity.MapLibrary.Wemade, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mir.Ethernity.MapLibrary.Wemade.1.0.3\lib\netstandard2.0\Mir.Ethernity.MapLibrary.Wemade.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
