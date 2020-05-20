@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MapEditor.Interface.layers;
+using Microsoft.Xna.Framework;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.MapLibrary;
 using Myra.Graphics2D.Brushes;
@@ -18,6 +19,7 @@ namespace MapEditor.Interface
         private MapFloorLayer _floor;
         private MapMiddleLayer _middle;
         private MapGridLayer _grid;
+        private MapFrontLayer _front;
 
         private Point _mousePosition;
         private Label _label;
@@ -28,14 +30,24 @@ namespace MapEditor.Interface
 
             Widgets.Add(_floor = new MapFloorLayer());
             Widgets.Add(_middle = new MapMiddleLayer());
+            Widgets.Add(_front = new MapFrontLayer());
             Widgets.Add(_grid = new MapGridLayer());
 
             Widgets.Add(_label = new Label() { TextColor = Color.White });
 
             TouchDown += MapPreview_TouchDown;
             TouchMoved += MapPreview_TouchMoved;
+            TouchUp += MapPreview_TouchUp;
         }
 
+        private void MapPreview_TouchUp(object sender, EventArgs e)
+        {
+            if (Environment.CursorTool == CursorTool.Selection)
+            {
+                if (Environment.SelectedCells.Count == 0 || Environment.AroundCell(Environment.MouseX, Environment.MouseY))
+                    Environment.SelectedCells.Add(new Point(Environment.MouseX, Environment.MouseY));
+            }
+        }
 
         private void MapPreview_TouchDown(object sender, EventArgs e)
         {
@@ -44,9 +56,12 @@ namespace MapEditor.Interface
 
         private void MapPreview_TouchMoved(object sender, EventArgs e)
         {
-            var movedPoint = Desktop.TouchPosition - _mousePosition;
-            _mousePosition = Desktop.TouchPosition;
-            Environment.UpdateUserScreen(Environment.UserScreenX - movedPoint.X, Environment.UserScreenY - movedPoint.Y);
+            if (Environment.CursorTool == CursorTool.Drag)
+            {
+                var movedPoint = Desktop.TouchPosition - _mousePosition;
+                _mousePosition = Desktop.TouchPosition;
+                Environment.UpdateUserScreen(Environment.UserScreenX - movedPoint.X, Environment.UserScreenY - movedPoint.Y);
+            }
         }
 
         public override void UpdateLayout()

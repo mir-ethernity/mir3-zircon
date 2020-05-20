@@ -58,7 +58,7 @@ namespace MapEditor.Interface
                     return;
                 }
 
-                _editor.LoadMap(fileDialog.FilePath);
+                Environment.LoadMap(fileDialog.FilePath);
             };
         }
     }

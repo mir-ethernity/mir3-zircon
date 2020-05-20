@@ -10,14 +10,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Environment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FontManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ContentManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GraphicsManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\InterfaceLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\layers\MapFrontLayer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\MapEditorControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapFloorLayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapGridLayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapMiddleLayer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Interface\MapPreview.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\layers\MapFloorLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\layers\MapGridLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\layers\MapMiddleLayer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\layers\MapPreview.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Interface\ToolbarControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\ToolboxControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Interface\windows\GridConfigWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LibraryManager.cs" />

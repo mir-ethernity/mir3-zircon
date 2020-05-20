@@ -15,24 +15,20 @@ namespace MapEditor.Interface
     {
         private MapPreview _preview;
         private ToolboxControl _toolbox;
+        private ToolbarControl _toobar;
 
         public MapEditorControl()
         {
+            ClipToBounds = true;
+
+            Proportions.Add(new Proportion { Type = ProportionType.Auto });
             Proportions.Add(new Proportion { Type = ProportionType.Fill });
             Proportions.Add(new Proportion { Type = ProportionType.Auto });
 
+            Widgets.Add(_toobar = new ToolbarControl());
             Widgets.Add(_preview = new MapPreview());
             Widgets.Add(_toolbox = new ToolboxControl());
-
-            LoadMap(@"E:\Debug\Client\Map\d4301.map");
         }
 
-        public void LoadMap(string filePath)
-        {
-            using (var fs = File.OpenRead(filePath))
-                Environment.MapActive = Environment.MapReader.Read(fs);
-
-            Environment.UpdateUserScreen((Environment.MapActive.Width * Environment.CellWidth) / 2, (Environment.MapActive.Height * Environment.CellHeight) / 2);
-        }
     }
 }

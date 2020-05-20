@@ -50,52 +50,6 @@ namespace MapEditor.Interface
                                 {
                                     var texture = LibraryManager.GenerateTexture(image[ImageType.Image]);
 
-                                    if ((texture.Width != Environment.CellWidth || texture.Height != Environment.CellHeight)
-                                        && (texture.Width != Environment.CellWidth * 2 || texture.Height != Environment.CellHeight * 2))
-                                    {
-                                        if (!blend)
-                                            context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
-                                        else
-                                        {
-                                            context.Batch.End();
-                                            context.Batch.Begin(blendState: BlendState.Additive);
-                                            context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
-                                            context.Batch.End();
-                                            context.Batch.Begin();
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // wrong image
-                            }
-                        }
-                    }
-
-
-                    if (cell.Front != null)
-                    {
-                        var file = LibraryManager.Get(cell.Front.TileType, cell.Front.FileType);
-                        if (file != null)
-                        {
-                            var index = cell.Front.ImageIndex;
-
-                            bool blend = false;
-                            if (cell.Front.AnimationFrame != null)
-                            {
-                                index += (ushort)(Environment.MapAnimation % (cell.Front.AnimationFrame.Value & 0x7F));
-                                blend = (cell.Front.AnimationFrame.Value & 0x80) > 0;
-                            }
-
-                            var image = file[index];
-                            if (image != null)
-                            {
-                                var texture = LibraryManager.GenerateTexture(image[ImageType.Image]);
-
-                                if ((texture.Width != Environment.CellWidth || texture.Height != Environment.CellHeight)
-                                    && (texture.Width != Environment.CellWidth * 2 || texture.Height != Environment.CellHeight * 2))
-                                {
                                     if (!blend)
                                         context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
                                     else

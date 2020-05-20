@@ -42,6 +42,9 @@
             // 
             // ribbon
             // 
+            // 
+            // 
+            // 
             this.ribbon.ExpandCollapseItem.Id = 0;
             this.ribbon.Items.AddRange(new DevExpress.XtraBars.BarItem[] {
             this.ribbon.ExpandCollapseItem,
@@ -52,14 +55,14 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(717, 144);
+            this.ribbon.Size = new System.Drawing.Size(717, 143);
             // 
             // ClearLogsButton
             // 
             this.ClearLogsButton.Caption = "Clear Logs";
-            this.ClearLogsButton.Glyph = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.Glyph")));
             this.ClearLogsButton.Id = 1;
-            this.ClearLogsButton.LargeGlyph = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.LargeGlyph")));
+            this.ClearLogsButton.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.ImageOptions.Image")));
+            this.ClearLogsButton.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("ClearLogsButton.ImageOptions.LargeImage")));
             this.ClearLogsButton.LargeWidth = 50;
             this.ClearLogsButton.Name = "ClearLogsButton";
             this.ClearLogsButton.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.ClearLogsButton_ItemClick);
@@ -74,7 +77,6 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.ClearLogsButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Actions";
@@ -84,9 +86,9 @@
             this.LogListBoxControl.Cursor = System.Windows.Forms.Cursors.Default;
             this.LogListBoxControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.LogListBoxControl.ItemAutoHeight = true;
-            this.LogListBoxControl.Location = new System.Drawing.Point(0, 144);
+            this.LogListBoxControl.Location = new System.Drawing.Point(0, 143);
             this.LogListBoxControl.Name = "LogListBoxControl";
-            this.LogListBoxControl.Size = new System.Drawing.Size(717, 339);
+            this.LogListBoxControl.Size = new System.Drawing.Size(717, 340);
             this.LogListBoxControl.TabIndex = 1;
             // 
             // InterfaceTimer

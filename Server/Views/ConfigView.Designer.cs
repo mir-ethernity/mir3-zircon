@@ -335,7 +335,7 @@
             this.ribbon.Name = "ribbon";
             this.ribbon.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.ribbonPage1});
-            this.ribbon.Size = new System.Drawing.Size(775, 144);
+            this.ribbon.Size = new System.Drawing.Size(775, 143);
             // 
             // SaveButton
             // 
@@ -365,8 +365,6 @@
             // ribbonPageGroup1
             // 
             this.ribbonPageGroup1.AllowTextClipping = false;
-            this.ribbonPageGroup1.ItemLinks.Add(this.SaveButton);
-            this.ribbonPageGroup1.ItemLinks.Add(this.ReloadButton);
             this.ribbonPageGroup1.Name = "ribbonPageGroup1";
             this.ribbonPageGroup1.ShowCaptionButton = false;
             this.ribbonPageGroup1.Text = "Actions";
@@ -374,10 +372,10 @@
             // xtraTabControl1
             // 
             this.xtraTabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.xtraTabControl1.Location = new System.Drawing.Point(0, 144);
+            this.xtraTabControl1.Location = new System.Drawing.Point(0, 143);
             this.xtraTabControl1.Name = "xtraTabControl1";
             this.xtraTabControl1.SelectedTabPage = this.xtraTabPage1;
-            this.xtraTabControl1.Size = new System.Drawing.Size(775, 423);
+            this.xtraTabControl1.Size = new System.Drawing.Size(775, 424);
             this.xtraTabControl1.TabIndex = 2;
             this.xtraTabControl1.TabPages.AddRange(new DevExpress.XtraTab.XtraTabPage[] {
             this.xtraTabPage1,
@@ -409,7 +407,7 @@
             this.xtraTabPage1.Controls.Add(this.labelControl1);
             this.xtraTabPage1.Enabled = true;
             this.xtraTabPage1.Name = "xtraTabPage1";
-            this.xtraTabPage1.Size = new System.Drawing.Size(769, 395);
+            this.xtraTabPage1.Size = new System.Drawing.Size(769, 396);
             this.xtraTabPage1.Text = "Network";
             // 
             // PacketBanTimeEdit
@@ -418,12 +416,6 @@
             this.PacketBanTimeEdit.Location = new System.Drawing.Point(108, 174);
             this.PacketBanTimeEdit.MenuManager = this.ribbon;
             this.PacketBanTimeEdit.Name = "PacketBanTimeEdit";
-            //
-            //
-            //
-            this.SyncronizeButton.Text = "Syncronize Remote DB";
-            this.SyncronizeButton.Location = new System.Drawing.Point(20, 200);
-            this.SyncronizeButton.Width = 200;
             // 
             // 
             // 
@@ -432,6 +424,14 @@
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
             this.PacketBanTimeEdit.Properties.Mask.EditMask = "HH:mm:ss";
             this.PacketBanTimeEdit.TabIndex = 40;
+            // 
+            // SyncronizeButton
+            // 
+            this.SyncronizeButton.Location = new System.Drawing.Point(20, 200);
+            this.SyncronizeButton.Name = "SyncronizeButton";
+            this.SyncronizeButton.Size = new System.Drawing.Size(200, 23);
+            this.SyncronizeButton.TabIndex = 41;
+            this.SyncronizeButton.Text = "Syncronize Remote DB";
             // 
             // labelControl86
             // 
@@ -616,7 +616,7 @@
             this.xtraTabPage2.Controls.Add(this.AllowNewAccountEdit);
             this.xtraTabPage2.Enabled = true;
             this.xtraTabPage2.Name = "xtraTabPage2";
-            this.xtraTabPage2.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage2.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage2.Text = "Control";
             // 
             // labelControl16
@@ -1003,7 +1003,7 @@
             this.xtraTabPage3.Controls.Add(this.CheckVersionEdit);
             this.xtraTabPage3.Enabled = true;
             this.xtraTabPage3.Name = "xtraTabPage3";
-            this.xtraTabPage3.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage3.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage3.Text = "System";
             // 
             // RabbitEventEndEdit
@@ -1211,7 +1211,7 @@
             this.xtraTabPage4.Controls.Add(this.labelControl26);
             this.xtraTabPage4.Enabled = true;
             this.xtraTabPage4.Name = "xtraTabPage4";
-            this.xtraTabPage4.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage4.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage4.Text = "Mail";
             // 
             // MailDisplayNameEdit
@@ -1390,7 +1390,7 @@
             this.xtraTabPage5.Controls.Add(this.labelControl42);
             this.xtraTabPage5.Enabled = true;
             this.xtraTabPage5.Name = "xtraTabPage5";
-            this.xtraTabPage5.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage5.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage5.Text = "Web Server";
             // 
             // labelControl81
@@ -1720,7 +1720,7 @@
             this.xtraTabPage6.Controls.Add(this.labelControl23);
             this.xtraTabPage6.Enabled = true;
             this.xtraTabPage6.Name = "xtraTabPage6";
-            this.xtraTabPage6.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage6.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage6.Text = "Players";
             // 
             // labelControl69
@@ -2054,7 +2054,7 @@
             this.xtraTabPage7.Controls.Add(this.DeadDurationEdit);
             this.xtraTabPage7.Enabled = true;
             this.xtraTabPage7.Name = "xtraTabPage7";
-            this.xtraTabPage7.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage7.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage7.Text = "Monsters";
             // 
             // LairRegionIndexEdit
@@ -2189,7 +2189,7 @@
             this.xtraTabPage8.Controls.Add(this.DropDurationEdit);
             this.xtraTabPage8.Enabled = true;
             this.xtraTabPage8.Name = "xtraTabPage8";
-            this.xtraTabPage8.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage8.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage8.Text = "Items";
             // 
             // StrengthLossRateEdit
@@ -2482,7 +2482,7 @@
             this.xtraTabPage9.Controls.Add(this.labelControl55);
             this.xtraTabPage9.Enabled = true;
             this.xtraTabPage9.Name = "xtraTabPage9";
-            this.xtraTabPage9.Size = new System.Drawing.Size(769, 396);
+            this.xtraTabPage9.Size = new System.Drawing.Size(769, 395);
             this.xtraTabPage9.Text = "Rates";
             // 
             // CompanionRateEdit

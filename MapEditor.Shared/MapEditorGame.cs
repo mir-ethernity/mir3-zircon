@@ -44,8 +44,9 @@ namespace MapEditor
             MyraEnvironment.Game = this;
             Environment.GraphicsDevice = GraphicsDevice;
 
-            FontManager.Normal = Content.Load<SpriteFont>("fonts/normal");
-            
+            ContentManager.FontNormal = Content.Load<SpriteFont>("fonts/normal");
+            ContentManager.IconDrag = Content.Load<Texture2D>("icons/drag");
+
             GraphicsManager.Load(GraphicsDevice);
 
             Desktop.HasExternalTextInput = true;
@@ -57,6 +58,8 @@ namespace MapEditor
                 Desktop.OnChar(a.Character);
             };
 
+
+            Environment.LoadMap(@"E:\Debug\Client\Map\0.map");
         }
 
         /// <summary>

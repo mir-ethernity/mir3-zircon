@@ -4,6 +4,7 @@ using Myra;
 using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace MapEditor.Interface
@@ -12,7 +13,7 @@ namespace MapEditor.Interface
     {
         public override void InternalRender(RenderContext batch)
         {
-            if (Environment.MapActive == null || !Environment.ShowGrid) return;
+            if (Environment.MapActive == null) return;
 
             int minX = Math.Max(0, Environment.UserX - Environment.OffsetX - 4), maxX = Math.Min(Environment.MapActive.Width - 1, Environment.UserX + Environment.OffsetX + 4);
             int minY = Math.Max(0, Environment.UserY - Environment.OffsetY - 4), maxY = Math.Min(Environment.MapActive.Height - 1, Environment.UserY + Environment.OffsetY + 25);
@@ -33,12 +34,19 @@ namespace MapEditor.Interface
                         ? Color.White
                         : Color.White * 0.5f;
 
-                    if(Environment.ShowNoWalkGrid && cell.Flag)
+                    var selected = Environment.SelectedCells.Any(scell => scell.X == x && scell.Y == y);
+
+                    if (selected)
+                    {
+                        batch.Batch.Draw(GraphicsManager.WhitePixel, new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), Color.Blue * 0.5f);
+                    }
+                    else if (Environment.ShowNoWalkGrid && cell.Flag)
                     {
                         batch.Batch.Draw(GraphicsManager.WhitePixel, new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), Color.Red * 0.5f);
                     }
 
-                    batch.Batch.DrawRectangle(new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), color);
+                    if (Environment.ShowGrid)
+                        batch.Batch.DrawRectangle(new Rectangle((int)drawX, (int)drawY, Environment.CellWidth, Environment.CellHeight), color);
                 }
             }
         }
