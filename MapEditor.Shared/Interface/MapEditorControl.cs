@@ -24,7 +24,7 @@ namespace MapEditor.Interface
             Widgets.Add(_preview = new MapPreview());
             Widgets.Add(_toolbox = new ToolboxControl());
 
-            LoadMap(@"E:\Debug\Client\Map\0.map");
+            LoadMap(@"E:\Debug\Client\Map\d4301.map");
         }
 
         public void LoadMap(string filePath)

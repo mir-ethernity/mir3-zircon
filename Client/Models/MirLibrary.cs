@@ -206,7 +206,7 @@ namespace Client.Envir
             if (texture == null) return;
 
             DXManager.SetOpacity(opacity);
-
+            
             DXManager.Sprite.Draw(texture, area, Vector3.Zero, new Vector3(x, y, 0), colour);
             CEnvir.DPSCounter++;
             DXManager.SetOpacity(oldOpacity);

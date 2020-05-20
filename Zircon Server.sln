@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEditor.Windows", "MapEdi
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MapEditor.Shared", "MapEditor.Shared\MapEditor.Shared.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mir.Ethernity.MapLibrary.Wemade", "..\mir-ethernity\map-library-wemade\src\Mir.Ethernity.MapLibrary.Wemade\Mir.Ethernity.MapLibrary.Wemade\Mir.Ethernity.MapLibrary.Wemade.csproj", "{6015B871-537A-4C31-8480-508B10733727}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MapEditor.Shared\MapEditor.Shared.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
@@ -188,6 +190,18 @@ Global
 		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x64.ActiveCfg = Release|x86
 		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x86.ActiveCfg = Release|x86
 		{A9295BE0-D270-419A-A028-677020641AE3}.Release|x86.Build.0 = Release|x86
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|x64.Build.0 = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Debug|x86.Build.0 = Debug|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|x64.ActiveCfg = Release|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|x64.Build.0 = Release|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|x86.ActiveCfg = Release|Any CPU
+		{6015B871-537A-4C31-8480-508B10733727}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -199,6 +213,7 @@ Global
 		{CA16F4EE-D55E-4248-97C2-7262CAAD6167} = {1003E132-6399-4CFE-911B-54270022A147}
 		{A9295BE0-D270-419A-A028-677020641AE3} = {1003E132-6399-4CFE-911B-54270022A147}
 		{A0CDBD0E-3A41-42B7-9425-A838BC2C7383} = {1003E132-6399-4CFE-911B-54270022A147}
+		{6015B871-537A-4C31-8480-508B10733727} = {1003E132-6399-4CFE-911B-54270022A147}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0A1E6870-A7CB-4165-960E-81486A3F1A0D}

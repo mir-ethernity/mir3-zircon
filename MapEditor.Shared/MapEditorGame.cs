@@ -77,7 +77,7 @@ namespace MapEditor
             if (_animationTime <= gameTime.TotalGameTime)
             {
                 Environment.MapAnimation++;
-                if (Environment.MapAnimation == 100)
+                if (Environment.MapAnimation == 10000)
                     Environment.MapAnimation = 0;
                 _animationTime = gameTime.TotalGameTime.Add(TimeSpan.FromMilliseconds(100));
             }

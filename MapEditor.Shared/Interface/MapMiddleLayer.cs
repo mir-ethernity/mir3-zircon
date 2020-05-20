@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.MapLibrary;
 using Myra.Graphics2D.Brushes;
@@ -28,7 +29,7 @@ namespace MapEditor.Interface
 
                     MapCell cell = Environment.MapActive.Cells[x, y];
 
-                    if (cell.Middle != null && (cell.Middle.AnimationFrame == null))
+                    if (cell.Middle != null)
                     {
                         var file = LibraryManager.Get(cell.Middle.TileType, cell.Middle.FileType);
                         if (file != null)
@@ -38,30 +39,42 @@ namespace MapEditor.Interface
                             bool blend = false;
                             if (cell.Middle.AnimationFrame != null)
                             {
-                                index += (ushort)(Environment.MapAnimation % (cell.Middle.AnimationFrame.Value & 0x4F));
-                                blend = (cell.Middle.AnimationFrame.Value & 0x50) > 0;
+                                index += (ushort)(Environment.MapAnimation % (cell.Middle.AnimationFrame.Value & 0x7F));
+                                blend = (cell.Middle.AnimationFrame.Value & 0x80) > 0;
                             }
 
-                            var image = file[index];
-                            if (image != null)
+                            if (file.Count > index)
                             {
-                                var texture = LibraryManager.GenerateTexture(image[ImageType.Image]);
-
-                                if ((texture.Width != Environment.CellWidth || texture.Height != Environment.CellHeight)
-                                    && (texture.Width != Environment.CellWidth * 2 || texture.Height != Environment.CellHeight * 2))
+                                var image = file[index];
+                                if (image != null)
                                 {
-                                    if (!blend)
-                                        context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
-                                    else
-                                        //using (GraphicsManager.Instance.UseBlend(true, 0.5f))
-                                        context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
+                                    var texture = LibraryManager.GenerateTexture(image[ImageType.Image]);
+
+                                    if ((texture.Width != Environment.CellWidth || texture.Height != Environment.CellHeight)
+                                        && (texture.Width != Environment.CellWidth * 2 || texture.Height != Environment.CellHeight * 2))
+                                    {
+                                        if (!blend)
+                                            context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
+                                        else
+                                        {
+                                            context.Batch.End();
+                                            context.Batch.Begin(blendState: BlendState.Additive);
+                                            context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
+                                            context.Batch.End();
+                                            context.Batch.Begin();
+                                        }
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                // wrong image
                             }
                         }
                     }
 
 
-                    if (cell.Front != null && (cell.Front.AnimationFrame == null))
+                    if (cell.Front != null)
                     {
                         var file = LibraryManager.Get(cell.Front.TileType, cell.Front.FileType);
                         if (file != null)
@@ -86,7 +99,13 @@ namespace MapEditor.Interface
                                     if (!blend)
                                         context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
                                     else
+                                    {
+                                        context.Batch.End();
+                                        context.Batch.Begin(blendState: BlendState.Additive);
                                         context.Batch.Draw(texture, new Vector2(drawX, drawY - texture.Height), Color.White);
+                                        context.Batch.End();
+                                        context.Batch.Begin();
+                                    }
                                 }
                             }
                         }

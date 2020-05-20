@@ -58,9 +58,6 @@
     <Reference Include="Mir.Ethernity.MapLibrary, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Mir.Ethernity.MapLibrary.1.0.5\lib\netstandard2.0\Mir.Ethernity.MapLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="Mir.Ethernity.MapLibrary.Wemade, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Mir.Ethernity.MapLibrary.Wemade.1.0.3\lib\netstandard2.0\Mir.Ethernity.MapLibrary.Wemade.dll</HintPath>
-    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
@@ -81,6 +78,12 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\mir-ethernity\map-library-wemade\src\Mir.Ethernity.MapLibrary.Wemade\Mir.Ethernity.MapLibrary.Wemade\Mir.Ethernity.MapLibrary.Wemade.csproj">
+      <Project>{6015b871-537a-4c31-8480-508b10733727}</Project>
+      <Name>Mir.Ethernity.MapLibrary.Wemade</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\MapEditor.Shared\MapEditor.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
